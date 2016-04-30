@@ -15,7 +15,6 @@ class ClassicMDP():
         self.grid = grid
         self.grid.add_mpd(self)
         self.pi = policy
-        self.distrs = [0.0, 0.0, 0.0, 0.0]
         
 
     def transition_prob(self, state, action, state_prime):
@@ -45,16 +44,13 @@ class ClassicMDP():
         prob_sum = 0.0
         for adj in adjs:
             trans_prob = self.transition_prob(self.state, next_action, adj)
-            print "Attempting south to " + str(adj) + " with prob " + str(trans_prob)
             prob_sum += trans_prob
             if x < prob_sum:
-                # TEsting code
-                
-                # end testing code
                 self.update_state(adj)
                 return adj
         return self.state    
         
 
-
+    def value_iteration(self):
+         
 

@@ -122,19 +122,16 @@ class BasicGrid():
             an = animation.FuncAnimation(fig, self.animate, interval=interval, repeat=False)
             plt.show(block=False)
             plt.pause(interval * (len(self.record_states) + 1) / 1000)
-            
-            print "done"
         except:
-            print "exception"
-
+            return
 if __name__ == '__main__':
     state = State(0, 0)
     grid = BasicGrid(10, 10)
     
     mdp = ClassicMDP(DumbPolicy(), grid)
-    for _ in range(100):
+    moves = 1000
+    for _ in range(moves):
         grid.step()
-        print mdp.state
-    #grid.show_recording()
+    grid.show_recording()
     
     

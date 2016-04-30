@@ -37,3 +37,13 @@ class DumbPolicy():
     def get_next(self, state):
         return Action.NORTH
     
+
+
+
+class ClassicPolicy():
+    
+    def __init__(self, width, height):
+        self.arr = np.zeros((width, height))
+
+
+    def get_next(self
