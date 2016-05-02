@@ -1,4 +1,4 @@
-from policy import Action, DumbPolicy
+from policy import Action, DumbPolicy, ClassicPolicy
 from state import State
 from mdp import ClassicMDP
 import matplotlib.pyplot as plt
@@ -13,6 +13,8 @@ class BasicGrid():
         self.mdp = None
         self.time_steps = 0
         self.record_states = []
+        self.reward_state = State(width - 1, height - 1)
+        self.failure_state = State(width - 2, height -1)
         return
 
     def add_mpd(self, mdp):
@@ -20,6 +22,9 @@ class BasicGrid():
             self.mdp.grid = None
         self.mdp = mdp
         self.mdp.grid = self
+        self.record_states = [self.mdp.state]
+
+    def clear_record_states(self):
         self.record_states = [self.mdp.state]
 
     def get_dir(self, state, state_prime):
@@ -61,45 +66,45 @@ class BasicGrid():
 
     
     def reward(self, state, action, state_prime):
+        #TODO: change invalid state_primes to reflect nearest valid state (not default)
         if not self.is_valid(state_prime):
             state_prime = state
-        if (state_prime.x == self.width - 1 and
-                state_prime.y == self.height - 1):
+        if (state_prime.x == self.reward_state.x and
+                state_prime.y == self.reward_state.y):
             return 10
-        elif (state_prime.x == self.width / 2 and
-                state_prime.y == self.height / 2):
+        elif (state_prime.x == self.failure_state.x and
+                state_prime.y == self.failure_state.y):
             return -10
         else:
             return -.02
 
-    def update_world(self):
-        #broken do not use
-        #plot = plt.figure()
-        
-        #plt.plot([self.mdp.state.x], [self.mdp.state.y], 'ro')
-        #plt.show(block=False)
-        #plt.close()
+    def _draw_reward(self, size):
+        self.figure.scatter([self.reward_state.x], [self.reward_state.y], s=size, c='g') 
+        return
+    
+    def _draw_failure(self, size):
+        self.figure.scatter([self.failure_state.x], [self.failure_state.y], s=size, c='r') 
         return
 
-
+    
     def step(self):
         self.record_states.append(mdp.state)
         mdp.move()
         self.time_steps += 1
         
-    def animate(self, i):
-        #if i > 20:
-        #    raise Exception
-        #pullData = open("sampleText.txt","r").read()
-        #dataArray = pullData.split('\n')
+    def _animate(self, i):
         self.figure.autoscale(False)
         if i < len(self.record_states):
             xar = [self.record_states[i].x]
             yar = [self.record_states[i].y]
-            
+            size = 15000 / self.height / self.width
+
             self.figure.clear()
-            self.figure.scatter(xar,yar,s=15000 / self.height / self.width)
+            self.figure.scatter(xar,yar, s=size)
+            self._draw_reward(size)
+            self._draw_failure(size)
             self.figure.set_xlim([-.5, self.width - 1 +.5])
+            self.figure.set_ylim([-.5, self.height - 1 + .5])                                
 
             width_range = np.arange(self.width)
             height_range = np.arange(self.height)
@@ -108,30 +113,43 @@ class BasicGrid():
             plt.yticks(height_range)
             
             plt.title("Step " + str(i))
-            self.figure.set_yticks(height_range[:-1] + 0.5, minor=True)
-            self.figure.set_xticks(width_range[:-1] + 0.5, minor=True)            
+            self.figure.set_yticks((height_range[:-1] + 0.5), minor=True)
+            self.figure.set_xticks((width_range[:-1] + 0.5), minor=True)            
             self.figure.grid(which='minor', axis='both', linestyle='-')            
-            self.figure.set_ylim([-.5, self.height - 1 + .5])                    
 
         
 
     def show_recording(self):
         fig, self.figure = plt.subplots()
-        interval = 200
+        interval = float(10000) / float(len(self.record_states))
         try:
-            an = animation.FuncAnimation(fig, self.animate, interval=interval, repeat=False)
+            an = animation.FuncAnimation(fig, self._animate, interval=interval, repeat=False)
             plt.show(block=False)
             plt.pause(interval * (len(self.record_states) + 1) / 1000)
         except:
             return
+
+    def get_all_states(self):
+        for i in range(self.width):
+            for j in range(self.height):
+                yield State(i, j)
+
+        
 if __name__ == '__main__':
-    state = State(0, 0)
-    grid = BasicGrid(10, 10)
+    grid = BasicGrid(5, 5)
+    mdp = ClassicMDP(ClassicPolicy(grid), grid)
     
-    mdp = ClassicMDP(DumbPolicy(), grid)
-    moves = 1000
-    for _ in range(moves):
+    mdp.value_iteration()
+    
+    mdp.save_policy()
+
+    for i in range(100):
         grid.step()
     grid.show_recording()
+    #mdp.save_policy()
+    #moves = 1000
+    #for _ in range(moves):
+    #    grid.step()
+    #grid.show_recording()
     
     

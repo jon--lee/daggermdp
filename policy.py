@@ -1,4 +1,4 @@
-
+import numpy as np
 
 
 class Action():
@@ -31,7 +31,7 @@ class Action():
 
 class DumbPolicy():
 
-    def __init__(self):
+    def __init__(self, grid = None):
         return
 
     def get_next(self, state):
@@ -42,8 +42,15 @@ class DumbPolicy():
 
 class ClassicPolicy():
     
-    def __init__(self, width, height):
-        self.arr = np.zeros((width, height))
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST}
 
+    def __init__(self, grid):
+        self.arr = np.zeros((grid.width, grid.height))
+        return
+        
 
-    def get_next(self
+    def get_next(self, state):
+        return self.arr[state.x, state.y]
+
+    def update(self, state, action):
+        self.arr[state.x, state.y] = action
