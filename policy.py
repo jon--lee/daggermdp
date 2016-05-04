@@ -42,7 +42,7 @@ class DumbPolicy():
 
 class ClassicPolicy():
     
-    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST}
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
 
     def __init__(self, grid):
         self.arr = np.zeros((grid.width, grid.height))
@@ -54,3 +54,17 @@ class ClassicPolicy():
 
     def update(self, state, action):
         self.arr[state.x, state.y] = action
+
+class SVMPolicy():
+    
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
+    
+    def __init__(self, svm):
+        self.svm = svm
+
+    def get_next(self, state):
+        return self.svm.predict([[state.x, state.y]])
+
+        
+
+    

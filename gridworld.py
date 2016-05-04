@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
 import numpy as np
+from dagger import Dagger
 class BasicGrid():
 
     def __init__(self, width, height):
@@ -13,16 +14,21 @@ class BasicGrid():
         self.mdp = None
         self.time_steps = 0
         self.record_states = []
-        self.reward_state = State(width - 1, height - 1)
-        self.failure_state = State(width - 2, height -1)
+        self.reward_state = State(width  / 2, height / 2)
+        self.failure_state = State(4, 2)
         return
 
-    def add_mpd(self, mdp):
+    def add_mdp(self, mdp):
         if self.mdp is not None:
             self.mdp.grid = None
         self.mdp = mdp
         self.mdp.grid = self
+        self.mdp.state = State(0, 0)
         self.record_states = [self.mdp.state]
+        self.time_steps = 0
+
+    def reset_mdp(self):
+        self.add_mdp(self.mdp)
 
     def clear_record_states(self):
         self.record_states = [self.mdp.state]
@@ -62,11 +68,22 @@ class BasicGrid():
         south_state = self.get_state_prime(state, Action.SOUTH)
         east_state = self.get_state_prime(state, Action.EAST)
         west_state = self.get_state_prime(state, Action.WEST)
-        return (north_state, south_state, east_state, west_state)
+        same_state = self.get_state_prime(state, Action.NONE)
+        return (north_state, south_state, east_state, west_state, same_state)
 
+    def get_nearest_valid(self, state):
+        if self.is_valid(state):
+            print "is_valid"
+            return state
+        new_state = State(state.x, state.y)
+        new_state.x = max(0, state.x)
+        new_state.x = min(self.width - 1, new_state.x)
+        new_state.y = max(0, new_state.y)
+        new_state.y = min(self.height - 1, new_state.y)
+        return new_state
     
     def reward(self, state, action, state_prime):
-        #TODO: change invalid state_primes to reflect nearest valid state (not default)
+        #TODO: change invalid state_primes to reflect nearest valid state (not current state)
         if not self.is_valid(state_prime):
             state_prime = state
         if (state_prime.x == self.reward_state.x and
@@ -97,12 +114,12 @@ class BasicGrid():
         if i < len(self.record_states):
             xar = [self.record_states[i].x]
             yar = [self.record_states[i].y]
-            size = 15000 / self.height / self.width
-
+            robo_size = 15000 / self.height / self.width
+            indicator_size = 30000 / self.height / self.width
             self.figure.clear()
-            self.figure.scatter(xar,yar, s=size)
-            self._draw_reward(size)
-            self._draw_failure(size)
+            self._draw_reward(indicator_size)
+            self._draw_failure(indicator_size)
+            self.figure.scatter(xar,yar, s=robo_size)            
             self.figure.set_xlim([-.5, self.width - 1 +.5])
             self.figure.set_ylim([-.5, self.height - 1 + .5])                                
 
@@ -121,11 +138,13 @@ class BasicGrid():
 
     def show_recording(self):
         fig, self.figure = plt.subplots()
-        interval = float(10000) / float(len(self.record_states))
+        # All recordings should take ~10 seconds
+        interval = float(5000) / float(len(self.record_states))
         try:
             an = animation.FuncAnimation(fig, self._animate, interval=interval, repeat=False)
             plt.show(block=False)
             plt.pause(interval * (len(self.record_states) + 1) / 1000)
+            plt.close()
         except:
             return
 
@@ -136,20 +155,17 @@ class BasicGrid():
 
         
 if __name__ == '__main__':
-    grid = BasicGrid(5, 5)
+    grid = BasicGrid(15, 15)
     mdp = ClassicMDP(ClassicPolicy(grid), grid)
-    
-    mdp.value_iteration()
-    
-    mdp.save_policy()
-
-    for i in range(100):
-        grid.step()
-    grid.show_recording()
+    #mdp.value_iteration()
     #mdp.save_policy()
-    #moves = 1000
-    #for _ in range(moves):
+    mdp.load_policy()
+    #for i in range(40):
     #    grid.step()
     #grid.show_recording()
     
-    
+    dagger = Dagger(grid, mdp)
+    dagger.rollout()            # rollout with supervisor policy
+    for _ in range(10):
+        dagger.retrain()
+        dagger.rollout()

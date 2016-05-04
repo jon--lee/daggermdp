@@ -14,7 +14,7 @@ class ClassicMDP():
     def __init__(self, policy, grid):
         self.state = State(0, 0)
         self.grid = grid
-        self.grid.add_mpd(self)
+        self.grid.add_mdp(self)
         self.pi = policy
         self.values = np.zeros((self.grid.width, self.grid.height))
         
@@ -25,6 +25,11 @@ class ClassicMDP():
             return the probability [0, 1] of a successful action
         """
         prime_dir = self.grid.get_dir(state, state_prime)
+        if action == Action.NONE and prime_dir == action:
+            return 1.0
+        elif action == Action.NONE:
+            return 0.0
+        
         if prime_dir == Action.NONE:
             return 0.0
         elif action == prime_dir:
@@ -56,7 +61,7 @@ class ClassicMDP():
     def value_iteration(self):
         print "Performing value iteration"
         new_values = np.zeros((self.grid.width, self.grid.height))
-        
+        i = 0
         # emulating a do-while loop (see break condition at bottom)
         while True:
             delta = 0.0            
@@ -72,8 +77,9 @@ class ClassicMDP():
                     new_val = max(new_val, action_sum)
                 self.set_value(state, new_val, self.values)
                 delta = max(delta, abs(curr_val - new_val))
-            print "iterating: " + str(delta)
-            if delta < 1e-3:
+            i += 1
+            if delta < 1e-2:
+                print "Iterations: " + str(i)
                 break
 
         # find actions with current value
@@ -95,17 +101,15 @@ class ClassicMDP():
     def value(self, state):
         #TODO: change this to reflect nearest valid state (not current state)
         if not self.grid.is_valid(state):
-            state = self.state
+            state = self.grid.get_nearest_valid(state)
         return self.values[state.x, state.y]
     
     def set_value(self, state, value, values):
         #TODO: see above
         if not self.grid.is_valid(state):
-            state = self.state
+            state = self.grid.get_nearest_valid(state)
         values[state.x, state.y] = value
 
-    #def set_value(self, state, value):
-    #    self.values[state.x, state.y] = value
     
 
     def save_policy(self):
