@@ -17,7 +17,7 @@ class Dagger():
             self.grid.step()
 
         self.grid.show_recording()
-        print self.svm.data
+        #print self.svm.data
 
 
     def set_supervisor_pi(self, pi):
@@ -26,4 +26,4 @@ class Dagger():
     def retrain(self):
         self.svm.fit()
         self.mdp.pi = SVMPolicy(self.svm)
-        print self.mdp.pi.get_next(State(0,0))
+        #print self.mdp.pi.get_next(State(0,0))

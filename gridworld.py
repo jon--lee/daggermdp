@@ -166,6 +166,6 @@ if __name__ == '__main__':
     
     dagger = Dagger(grid, mdp)
     dagger.rollout()            # rollout with supervisor policy
-    for _ in range(10):
+    for _ in range(5):
         dagger.retrain()
         dagger.rollout()
