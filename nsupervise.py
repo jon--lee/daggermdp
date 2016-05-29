@@ -4,7 +4,7 @@ from policy import SVMPolicy,NetPolicy
 import numpy as np
 
 from state import State
-class Dagger():
+class NSupervise():
 
     def __init__(self, grid, mdp, moves=40):
         self.grid = grid
@@ -14,6 +14,7 @@ class Dagger():
         self.moves = moves
         #self.reward = np.zeros(40)
         self.super_pi = mdp.pi
+        self.mdp.pi_noise = True
         self.reward = np.zeros(self.moves)
         self.animate = False
         
@@ -35,7 +36,6 @@ class Dagger():
             self.reward[t] = self.grid.reward(x_t,a_t,x_t_1)
 
 
-
         if(self.animate):
             self.grid.show_recording()
         #print self.svm.data
@@ -45,7 +45,7 @@ class Dagger():
     def set_supervisor_pi(self, pi):
         self.super_pi = pi
 
-    def retrain(self):
+    def train(self):
         self.net.fit()
         self.mdp.pi = NetPolicy(self.net)
         #print self.mdp.pi.get_next(State(0,0))

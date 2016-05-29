@@ -50,6 +50,7 @@ class ClassicPolicy():
         
 
     def get_next(self, state):
+        print self.arr.shape
         return self.arr[state.x, state.y]
 
     def update(self, state, action):
@@ -64,6 +65,17 @@ class SVMPolicy():
 
     def get_next(self, state):
         return self.svm.predict([[state.x, state.y]])
+
+
+class NetPolicy():
+    
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
+    
+    def __init__(self, net):
+        self.net = net
+
+    def get_next(self, state):
+        return self.net.predict([[state.x, state.y]])
 
         
 

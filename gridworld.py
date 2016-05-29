@@ -104,7 +104,7 @@ class BasicGrid():
         return
 
     
-    def step(self):
+    def step(self,mdp):
         self.record_states.append(mdp.state)
         mdp.move()
         self.time_steps += 1
@@ -157,8 +157,8 @@ class BasicGrid():
 if __name__ == '__main__':
     grid = BasicGrid(15, 15)
     mdp = ClassicMDP(ClassicPolicy(grid), grid)
-    #mdp.value_iteration()
-    #mdp.save_policy()
+    # mdp.value_iteration()
+    # mdp.save_policy()
     mdp.load_policy()
     #for i in range(40):
     #    grid.step()

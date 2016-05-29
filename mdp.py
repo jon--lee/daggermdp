@@ -4,7 +4,7 @@ from state import State
 import state
 import random
 import pickle
-        
+import IPython
 
 
 class ClassicMDP():
@@ -17,6 +17,9 @@ class ClassicMDP():
         self.grid.add_mdp(self)
         self.pi = policy
         self.values = np.zeros((self.grid.width, self.grid.height))
+        self.pi_noise = False
+        self.noise = 0.4
+
         
 
     def transition_prob(self, state, action, state_prime):
@@ -43,10 +46,21 @@ class ClassicMDP():
         if self.grid.is_valid(new_state):
             self.state = new_state
 
+    def rand_action(self): 
+        actions = [-1.0,0.0,1.0,2.0,3.0]
+        idx = np.random.randint(5)
+        return actions[idx]
 
     def move(self):
-        next_action = self.pi.get_next(self.state)
+        next_action = self.pi.get_next(self.state)    
         adjs = self.grid.get_adjacent(self.state)
+
+        if(self.pi_noise):
+            x = random.random()
+            if(x < self.noise):
+                print "NOISY"
+                next_action = self.rand_action()
+
         x = random.random()
         prob_sum = 0.0
         for adj in adjs:
