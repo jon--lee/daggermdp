@@ -1,4 +1,6 @@
 *.swp
+/gridnet
+/Net
 *.p
 *.pyc
 *.txt
