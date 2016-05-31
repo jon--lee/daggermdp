@@ -13,7 +13,7 @@ from analysis import Analysis
 import IPython
 
 ITER = 10
-TRIALS =10
+TRIALS =20
 SAMP = 5
 
 grid = BasicGrid(15, 15)
@@ -24,21 +24,23 @@ analysis = Analysis()
 mdp.load_policy()
 
 ####DAgger##########
-data = np.zeros([TRIALS,ITER])
-for k in range(TRIALS):
-	dagger = Dagger(grid, mdp)
-	dagger.rollout()            # rollout with supervisor policy
-	r_D = np.zeros(ITER)
-	for t in range(ITER):
-		dagger.retrain()
-		for i in range(SAMP):
-			dagger.rollout()
-			r_D[t] = r_D[t]+dagger.get_reward()/SAMP
+# data = np.zeros([TRIALS,ITER])
+# for k in range(TRIALS):
+# 	mdp.load_policy()
+# 	dagger = Dagger(grid, mdp)
+# 	dagger.rollout()            # rollout with supervisor policy
+# 	r_D = np.zeros(ITER)
+# 	for t in range(ITER):
+# 		dagger.retrain()
+# 		for i in range(SAMP):
+# 			dagger.rollout()
+# 			r_D[t] = r_D[t]+dagger.get_reward()/SAMP
 
-	data[k,:] = r_D
+# 	data[k,:] = r_D
+# 	analysis.show_states(dagger.get_states())
 
-analysis.get_perf(data)
-#####SUPERVISE########
+# analysis.get_perf(data)
+####SUPERVISE########
 data = np.zeros([TRIALS,ITER])
 for k in range(TRIALS):
 	mdp.load_policy()
@@ -55,6 +57,7 @@ for k in range(TRIALS):
 		r = r+supervise.get_reward()/SAMP
 	r_S = np.zeros(ITER)+r
 	data[k,:] = r_S
+	analysis.show_states(supervise.get_states())
 
 analysis.get_perf(data)
 
@@ -62,9 +65,10 @@ analysis.get_perf(data)
 #####NOISY SUPERVISOR#####
 data = np.zeros([TRIALS,ITER])
 for k in range(TRIALS):
+	mdp.load_policy()
 	nsupervise = NSupervise(grid,mdp)
 	#Collect Noisy Supervise Samples
-	mdp.load_policy()
+	
 	for t in range(ITER*SAMP):
 	   	nsupervise.rollout()
 	nsupervise.train()

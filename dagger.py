@@ -40,6 +40,8 @@ class Dagger():
             self.grid.show_recording()
         #print self.svm.data
 
+    def get_states(self):
+        return self.net.get_states()
     def get_reward(self):
         return np.sum(self.reward)
     def set_supervisor_pi(self, pi):

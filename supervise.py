@@ -16,6 +16,8 @@ class Supervise():
         self.super_pi = mdp.pi
         self.reward = np.zeros(self.moves)
         self.animate = False
+        self.train_loss = 0
+        self.test_loss = 0
         
     def rollout(self):
         self.grid.reset_mdp()
@@ -44,7 +46,14 @@ class Supervise():
     def set_supervisor_pi(self, pi):
         self.super_pi = pi
 
+    def get_states(self):
+        return self.net.get_states()
     def train(self):
         self.net.fit()
         self.mdp.pi = NetPolicy(self.net)
         #print self.mdp.pi.get_next(State(0,0))
+    def get_train_loss(self):
+        return self.train_loss
+
+    def get_test_loss(self):
+        return self.test_loss

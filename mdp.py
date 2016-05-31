@@ -18,7 +18,7 @@ class ClassicMDP():
         self.pi = policy
         self.values = np.zeros((self.grid.width, self.grid.height))
         self.pi_noise = False
-        self.noise = 0.4
+        self.noise = 0.5
 
         
 
@@ -60,6 +60,7 @@ class ClassicMDP():
             if(x < self.noise):
                 print "NOISY"
                 next_action = self.rand_action()
+
 
         x = random.random()
         prob_sum = 0.0
