@@ -4,15 +4,20 @@ from policy import SVMPolicy,NetPolicy
 import numpy as np
 import matplotlib.pyplot as plt
 import IPython
+import cPickle
 
 from state import State
 class Analysis():
     
-    def __init__(self,H,W,ITERS):
+    def __init__(self,H,W,ITERS,desc="No description"):
         self.h = H
         self.w = W
         self.iters = ITERS
         self.density = np.zeros([H,W])
+        self.desc = desc
+        self.test_loss = -1.0
+        self.train_loss = -1.0
+        
     def compute_std_er_m(self,data):
         n = data.shape[0]
         std = np.std(data)
@@ -37,14 +42,27 @@ class Analysis():
         
         plt.errorbar(x,mean,yerr=err,linewidth=5.0)
     
+        self.mean = mean
+        self.err = err
+
         return [mean,err]
 
 
-    def display_test_train(self,train,test):
+    def display_train_test(self,train,test, trials):
         #Write a function to output test train.
-        print "TEST LOSS ", np.sum(test_loss)/TRIALS
-        print "TRAIN LOSS", np.sum(train_loss)/TRIALS
+        print "TEST LOSS ", np.sum(test)/trials
+        print "TRAIN LOSS", np.sum(train)/trials
+        self.train_loss = train
+        self.test_loss = test
         #SAve 
+
+    def save(self, filename='analysis.p'):
+        #[self.mean, self.err, self.density, self.train_loss, self.test_loss]
+        return cPickle.dump(self, open(filename, 'wb'))
+
+    @staticmethod
+    def load(filename):
+        return cPickle.load(open(filename, 'rb'))
 
     def plot(self):
         plt.ylabel('Reward')
