@@ -13,7 +13,7 @@ from analysis import Analysis
 import IPython
 
 ITER = 10
-TRIALS =5
+TRIALS =1
 SAMP = 5
 
 #GridWorld Params

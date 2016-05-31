@@ -24,6 +24,7 @@ class Analysis():
         return np.sum(data)/n
 
     def get_perf(self,data):
+        #SAve each mean and err at the end
         iters = data.shape[1]
         mean = np.zeros(iters)
         err = np.zeros(iters)
@@ -37,6 +38,13 @@ class Analysis():
         plt.errorbar(x,mean,yerr=err,linewidth=5.0)
     
         return [mean,err]
+
+
+    def display_test_train(self,train,test):
+        #Write a function to output test train.
+        print "TEST LOSS ", np.sum(test_loss)/TRIALS
+        print "TRAIN LOSS", np.sum(train_loss)/TRIALS
+        #SAve 
 
     def plot(self):
         plt.ylabel('Reward')
@@ -65,6 +73,7 @@ class Analysis():
 
     def compile_density(self):
         density_r = np.zeros([self.h*self.w,3])
+        IPython.embed()
         norm = np.sum(self.density)
         for w in range(self.w):
             for h in range(self.h):
@@ -85,7 +94,7 @@ class Analysis():
         density_r = self.compile_density()
         #IPython.embed()
         plt.scatter(density_r[:,0],density_r[:,1], c= density_r[:,2],cmap = cm,s=300)
-
+        #save each density if called 
        
         #PLOT GOAL STATE
         plt.scatter([7],[7], c= 'green',s=300)
