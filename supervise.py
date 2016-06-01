@@ -6,7 +6,7 @@ import numpy as np
 from state import State
 class Supervise():
 
-    def __init__(self, grid, mdp, moves=40):
+    def __init__(self, grid, mdp, moves=20):
         self.grid = grid
         self.mdp = mdp
         self.svm = LinearSVM(grid, mdp)
@@ -42,6 +42,10 @@ class Supervise():
         if(self.animate):
             self.grid.show_recording()
         #print self.svm.data
+    def sample_policy(self):
+        self.record = True
+        self.net.clear_data()
+
 
     def get_reward(self):
         return np.sum(self.reward)

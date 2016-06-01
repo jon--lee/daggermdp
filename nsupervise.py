@@ -20,7 +20,7 @@ class NSupervise():
         self.animate = False
         self.train_loss = 0
         self.test_loss = 0
-        self.record = False
+        self.record = True
         
     def rollout(self):
         self.grid.reset_mdp()
@@ -47,7 +47,9 @@ class NSupervise():
             self.grid.show_recording()
         
         #print self.svm.data
-
+    def sample_policy(self):
+        self.record = True
+        self.net.clear_data()
     def get_states(self):
         return self.net.get_states()
     def get_reward(self):

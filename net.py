@@ -21,6 +21,9 @@ class Net():
 
     def add_datum(self, state, action):
         self.data.append((state, action))
+
+    def clear_data(self):
+        self.data = []
     
     def get_states(self):
         N = len(self.data)
