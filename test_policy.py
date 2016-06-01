@@ -13,7 +13,10 @@ from analysis import Analysis
 import IPython
 
 ITER = 10
+
 TRIALS = 1
+
+
 SAMP = 5
 
 #GridWorld Params
@@ -45,27 +48,28 @@ for k in range(TRIALS):
 
 analysis.show_states()
 analysis.get_perf(data)
+analysis.save("test.p")
 
 ####SUPERVISE########
-data = np.zeros([TRIALS,ITER])
-for k in range(TRIALS):
-	mdp.load_policy()
-	supervise = Supervise(grid,mdp)
+# data = np.zeros([TRIALS,ITER])
+# for k in range(TRIALS):
+# 	mdp.load_policy()
+# 	supervise = Supervise(grid,mdp)
 
-	#Collect Supervise Samples
-	for t in range(ITER*SAMP):
-	   	supervise.rollout()
-	supervise.train()
-	#Evaluate Policy
-	r = 0.0
-	for t in range(SAMP):
-		supervise.rollout()
-		r = r+supervise.get_reward()/SAMP
-	r_S = np.zeros(ITER)+r
-	data[k,:] = r_S
-	#analysis.show_states(supervise.get_states())
+# 	#Collect Supervise Samples
+# 	for t in range(ITER*SAMP):
+# 	   	supervise.rollout()
+# 	supervise.train()
+# 	#Evaluate Policy
+# 	r = 0.0
+# 	for t in range(SAMP):
+# 		supervise.rollout()
+# 		r = r+supervise.get_reward()/SAMP
+# 	r_S = np.zeros(ITER)+r
+# 	data[k,:] = r_S
+# 	#analysis.show_states(supervise.get_states())
 
-analysis.get_perf(data)
+# analysis.get_perf(data)
 
 
 #####NOISY SUPERVISOR#####

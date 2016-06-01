@@ -34,13 +34,15 @@ class Net():
 
     def fit(self):
         data = inputdata.GridData(self.data)
-       
-        if(self.net_name == 'Net'):
-            self.net = gridnet.GridNet()
-        elif(self.net_name == 'Log'):
-            self.net = gridlog.GridLog()
-        #self.net.optimize(2000,data,batch_size = 50)
-        self.net.optimize(1000,data,batch_size = 50)
+        
+        g = tf.Graph()          # this appears to improve speed when
+        with g.as_default():    # initializing many times by avoiding re-initializing variables
+            if(self.net_name == 'Net'):
+                self.net = gridnet.GridNet()
+            elif(self.net_name == 'Log'):
+                self.net = gridlog.GridLog()
+            #self.net.optimize(2000,data,batch_size = 50)
+            self.net.optimize(1000,data,batch_size = 50)
     
     def predict(self, a):
         return self.net.predict(a)

@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
 import numpy as np
+from random import randint
 from dagger import Dagger
+from svm_dagger import SVMDagger
 class BasicGrid():
 
     def __init__(self, width, height):
@@ -14,9 +16,32 @@ class BasicGrid():
         self.mdp = None
         self.time_steps = 0
         self.record_states = []
-        self.reward_state = State(width  / 2, height / 2)
-        self.failure_state = State(4, 2)
+        
+        self.reward_states = self.get_reward_states()
+        self.sink_states = self.get_sink_states()
+
+        #self.reward_state = State(width  / 2, height / 2)
+        #self.failure_state = State(4, 2)
         return
+
+
+    def get_reward_states(self):
+        """
+            Fixed for now for at least 10x10 grid
+        """
+        state1 = State(4, 6)
+        state2 = State(6, 9)
+        state3 = State(self.width / 2, self.height / 2)
+        return [state1, state2, state3]
+
+    def get_sink_states(self):
+        """
+            Fixed for now for at least 10x10 grid
+        """
+        state1 = State(1, 2)
+        state2 = State(3, 5)
+        state3 = State(5, 9)
+        return [state1, state2, state3]
 
     def add_mdp(self, mdp):
         if self.mdp is not None:
@@ -82,25 +107,55 @@ class BasicGrid():
         new_state.y = min(self.height - 1, new_state.y)
         return new_state
     
-    def reward(self, state, action, state_prime):
+    #def reward(self, state, action, state_prime):
         #TODO: change invalid state_primes to reflect nearest valid state (not current state)
+    #    if not self.is_valid(state_prime):
+    #        state_prime = state
+    #    if (state_prime.x == self.reward_state.x and
+    #            state_prime.y == self.reward_state.y):
+    #        return 10
+    #    elif (state_prime.x == self.failure_state.x and
+    #            state_prime.y == self.failure_state.y):
+    #        return -10
+    #    else:
+    #        return -.02
+
+    def reward(self, state, action, state_prime):
         if not self.is_valid(state_prime):
             state_prime = state
-        if (state_prime.x == self.reward_state.x and
-                state_prime.y == self.reward_state.y):
+        if BasicGrid.contains_states(self.reward_states, state_prime):
             return 10
-        elif (state_prime.x == self.failure_state.x and
-                state_prime.y == self.failure_state.y):
+        elif BasicGrid.contains_states(self.sink_states, state_prime):
             return -10
         else:
             return -.02
 
-    def _draw_reward(self, size):
-        self.figure.scatter([self.reward_state.x], [self.reward_state.y], s=size, c='g') 
+    @staticmethod
+    def contains_states(states, state):
+        for s in states:
+            if s.equals(state):
+                return True
+        return False
+
+    def _draw_rewards(self, size):
+        xs = []
+        ys = []
+        for state in self.reward_states:
+            xs.append(state.x)
+            ys.append(state.y)
+        self.figure.scatter(xs, ys, s=size, c='g')         
+        #self.figure.scatter([self.reward_state.x], [self.reward_state.y], s=size, c='g') 
         return
     
-    def _draw_failure(self, size):
-        self.figure.scatter([self.failure_state.x], [self.failure_state.y], s=size, c='r') 
+    def _draw_sinks(self, size):
+        xs = []
+        ys = []
+        for state in self.sink_states:
+            xs.append(state.x)
+            ys.append(state.y)
+        self.figure.scatter(xs, ys, s=size, c='r') 
+        #self.figure.scatter([self.failure_state.x], [self.failure_state.y], s=size, c='r') 
+        
         return
 
     
@@ -117,8 +172,8 @@ class BasicGrid():
             robo_size = 15000 / self.height / self.width
             indicator_size = 30000 / self.height / self.width
             self.figure.clear()
-            self._draw_reward(indicator_size)
-            self._draw_failure(indicator_size)
+            self._draw_rewards(indicator_size)
+            self._draw_sinks(indicator_size)
             self.figure.scatter(xar,yar, s=robo_size)            
             self.figure.set_xlim([-.5, self.width - 1 +.5])
             self.figure.set_ylim([-.5, self.height - 1 + .5])                                
@@ -157,15 +212,17 @@ class BasicGrid():
 if __name__ == '__main__':
     grid = BasicGrid(15, 15)
     mdp = ClassicMDP(ClassicPolicy(grid), grid)
-    # mdp.value_iteration()
-    # mdp.save_policy()
-    mdp.load_policy()
-    #for i in range(40):
-    #    grid.step()
-    #grid.show_recording()
     
-    dagger = Dagger(grid, mdp)
-    dagger.rollout()            # rollout with supervisor policy
-    for _ in range(5):
-        dagger.retrain()
-        dagger.rollout()
+    #mdp.value_iteration()
+    #mdp.save_policy()
+    mdp.load_policy()
+    
+    for i in range(40):
+        grid.step(mdp)
+    grid.show_recording()
+    
+    #dagger = SVMDagger(grid, mdp)
+    #dagger.rollout()            # rollout with supervisor policy
+    #for _ in range(5):
+    #    dagger.retrain()
+    #    dagger.rollout()

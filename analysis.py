@@ -4,15 +4,23 @@ from policy import SVMPolicy,NetPolicy
 import numpy as np
 import matplotlib.pyplot as plt
 import IPython
+import cPickle
 
 from state import State
 class Analysis():
     
-    def __init__(self,H,W,ITERS):
+    def __init__(self,H,W,ITERS,rewards=None, sinks=None, desc="No description"):
         self.h = H
         self.w = W
         self.iters = ITERS
         self.density = np.zeros([H,W])
+
+        self.desc = desc
+        self.test_loss = -1.0
+        self.train_loss = -1.0
+        self.x = None
+        self.mean = None
+        self.err = None
 
 
     def compute_std_er_m(self,data):
@@ -39,20 +47,41 @@ class Analysis():
         
         plt.errorbar(x,mean,yerr=err,linewidth=5.0)
     
+        self.mean = mean
+        self.err = err
+        self.x = x
+
         return [mean,err]
+    
+    def set_errorbar(self):
+        plt.errorbar(self.x,self.mean,yerr=self.err,linewidth=5.0)
+        
 
-
-    def display_test_train(self,train,test):
+    def display_train_test(self,train,test, trials):
         #Write a function to output test train.
-        print "TEST LOSS ", np.sum(test_loss)/TRIALS
-        print "TRAIN LOSS", np.sum(train_loss)/TRIALS
+        print "TEST LOSS ", np.sum(test)/trials
+        print "TRAIN LOSS", np.sum(train)/trials
+        self.train_loss = train
+        self.test_loss = test
         #SAve 
+
+    def save(self, filename='analysis.p'):
+        #[self.mean, self.err, self.density, self.train_loss, self.test_loss]
+        return cPickle.dump(self, open(filename, 'wb'))
+
+    @staticmethod
+    def load(filename):
+        a = cPickle.load(open(filename, 'rb'))
+        if a.x is not None and a.mean is not None:    
+            a.set_errorbar()
+        return a
 
     def plot(self):
         plt.ylabel('Reward')
         plt.xlabel('Iterations')
 
-        names = ['NN_Supervise','LOG_Supervisor']
+        names = ['DAgger']        
+        #names = ['NN_Supervise','LOG_Supervisor']
         plt.legend(names,loc='upper right')
 
         font = {'family' : 'normal',
@@ -103,7 +132,7 @@ class Analysis():
         axes.set_ylim([0,15])
         density_r = self.compile_density()
         IPython.embed()
-        plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2]/self.m_val,cmap = cm,s=300,edgecolors='none')
+        plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2],cmap = cm,s=300,edgecolors='none')
         #save each density if called 
        
         #PLOT GOAL STATE

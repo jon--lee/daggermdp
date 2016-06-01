@@ -16,3 +16,6 @@ class State():
             
     def __str__(self):
         return self.toString()
+
+    def equals(self, other):
+        return self.x == other.x and self.y == other.y
