@@ -13,6 +13,8 @@ class Analysis():
         self.w = W
         self.iters = ITERS
         self.density = np.zeros([H,W])
+
+
     def compute_std_er_m(self,data):
         n = data.shape[0]
         std = np.std(data)
@@ -64,36 +66,44 @@ class Analysis():
 
     def count_states(self,all_states):
         N = all_states.shape[0]
+        current_density = np.zeros([self.h,self.w])
         for i in range(N):
             x = all_states[i,0]
             y = all_states[i,1]
-            self.density[x,y] = self.density[x,y]+ 1.0/self.iters 
+            current_density[x,y] = current_density[x,y] +1.0
+
+        norm = np.sum(current_density)
+        IPython.embed()
+        current_density = current_density/norm
+        self.density = self.density+ current_density/self.iters
 
         
 
     def compile_density(self):
         density_r = np.zeros([self.h*self.w,3])
-        IPython.embed()
         norm = np.sum(self.density)
+        self.m_val = 0.0
         for w in range(self.w):
             for h in range(self.h):
-                val = self.density[w,h]/norm*255
-                val = 1/val
+                val = self.density[w,h]
+                if(val > self.m_val):
+                    self.m_val = val
                 val_r = np.array([h,w,val])
                 density_r[w*self.w+h,:] = val_r
+        print "M VAL ", self.m_val
         return density_r
 
     def show_states(self):
         plt.xlabel('X')
         plt.ylabel('Y')
-        cm = plt.cm.get_cmap('gray')
+        cm = plt.cm.get_cmap('gray_r')
 
         axes = plt.gca()
         axes.set_xlim([0,15])
         axes.set_ylim([0,15])
         density_r = self.compile_density()
-        #IPython.embed()
-        plt.scatter(density_r[:,0],density_r[:,1], c= density_r[:,2],cmap = cm,s=300)
+        IPython.embed()
+        plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2]/self.m_val,cmap = cm,s=300,edgecolors='none')
         #save each density if called 
        
         #PLOT GOAL STATE

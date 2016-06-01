@@ -13,7 +13,7 @@ from analysis import Analysis
 import IPython
 
 ITER = 10
-TRIALS =20
+TRIALS = 1
 SAMP = 5
 
 #GridWorld Params
@@ -40,9 +40,10 @@ for k in range(TRIALS):
 			dagger.rollout()
 			r_D[t] = r_D[t]+dagger.get_reward()/SAMP
 
+	analysis.count_states(dagger.get_states())
 	data[k,:] = r_D
-	#analysis.show_states(dagger.get_states())
 
+analysis.show_states()
 analysis.get_perf(data)
 
 ####SUPERVISE########

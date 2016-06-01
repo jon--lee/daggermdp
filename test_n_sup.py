@@ -34,7 +34,7 @@ test_loss_n = np.zeros([TRIALS])
 train_loss_n = np.zeros([TRIALS])
 for k in range(TRIALS):
 	mdp.load_policy()
-	nsupervise = NSupervise(grid,mdp)
+	nsupervise = Supervise(grid,mdp)
 	#Collect Noisy Supervise Samples
 	
 	for t in range(ITER*SAMP):
@@ -59,26 +59,26 @@ analysis.get_perf(data)
 
 
 # #####NOISY SUPERVISOR LOGISTIC#####
-data = np.zeros([TRIALS,ITER])
-test_loss = np.zeros([TRIALS])
-train_loss = np.zeros([TRIALS])
-for k in range(TRIALS):
-	mdp.load_policy()
-	nsupervise = NSupervise(grid,mdp, net = 'Log')
-	#Collect Noisy Supervise Samples
+# data = np.zeros([TRIALS,ITER])
+# test_loss = np.zeros([TRIALS])
+# train_loss = np.zeros([TRIALS])
+# for k in range(TRIALS):
+# 	mdp.load_policy()
+# 	nsupervise = NSupervise(grid,mdp, net = 'Log')
+# 	#Collect Noisy Supervise Samples
 	
-	for t in range(ITER*SAMP):
-	   	nsupervise.rollout()
-	nsupervise.train()
-	#Evaluate Policy
-	r = 0.0
-	for t in range(SAMP):
-		nsupervise.rollout()
-		r = r+nsupervise.get_reward()/SAMP
-	r_SN = np.zeros(ITER)+r
-	data[k,:] = r_SN
-	test_loss[k] = nsupervise.get_test_loss()
-	train_loss[k] = nsupervise.get_train_loss() 
+# 	for t in range(ITER*SAMP):
+# 	   	nsupervise.rollout()
+# 	nsupervise.train()
+# 	#Evaluate Policy
+# 	r = 0.0
+# 	for t in range(SAMP):
+# 		nsupervise.rollout()
+# 		r = r+nsupervise.get_reward()/SAMP
+# 	r_SN = np.zeros(ITER)+r
+# 	data[k,:] = r_SN
+# 	test_loss[k] = nsupervise.get_test_loss()
+# 	train_loss[k] = nsupervise.get_train_loss() 
 
 
 # analysis.get_perf(data)

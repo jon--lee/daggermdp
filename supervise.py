@@ -18,12 +18,14 @@ class Supervise():
         self.animate = False
         self.train_loss = 0
         self.test_loss = 0
+        self.record = True
         
     def rollout(self):
         self.grid.reset_mdp()
         self.reward = np.zeros(self.moves)
         for t in range(self.moves):
-            self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
+            if(self.record):
+                self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
             #Get current state and action
             x_t = self.mdp.state
             a_t = self.mdp.pi.get_next(x_t)
@@ -51,6 +53,7 @@ class Supervise():
     def train(self):
         self.net.fit()
         self.mdp.pi = NetPolicy(self.net)
+        self.record = False
         #print self.mdp.pi.get_next(State(0,0))
     def get_train_loss(self):
         return self.train_loss

@@ -2,6 +2,7 @@ from svm import LinearSVM
 from net import Net
 from policy import SVMPolicy,NetPolicy
 import numpy as np
+import IPython
 
 from state import State
 class NSupervise():
@@ -19,6 +20,7 @@ class NSupervise():
         self.animate = False
         self.train_loss = 0
         self.test_loss = 0
+        self.record = False
         
     def rollout(self):
         self.grid.reset_mdp()
@@ -26,7 +28,8 @@ class NSupervise():
         for t in range(self.moves):
             a = self.super_pi.get_next(self.mdp.state)
             print "action ",a
-            self.net.add_datum(self.mdp.state, a)
+            if(self.record):
+                self.net.add_datum(self.mdp.state, a)
             #Get current state and action
             x_t = self.mdp.state
             a_t = self.mdp.pi.get_next(x_t)
@@ -42,6 +45,7 @@ class NSupervise():
 
         if(self.animate):
             self.grid.show_recording()
+        
         #print self.svm.data
 
     def get_states(self):
@@ -58,6 +62,7 @@ class NSupervise():
         self.test_loss = stats[1]
         self.mdp.pi_noise = False
         self.mdp.pi = NetPolicy(self.net)
+        self.record = False
 
     def get_train_loss(self):
         return self.train_loss
