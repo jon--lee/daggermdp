@@ -102,7 +102,6 @@ class Analysis():
             current_density[x,y] = current_density[x,y] +1.0
 
         norm = np.sum(current_density)
-        IPython.embed()
         current_density = current_density/norm
         self.density = self.density+ current_density/self.iters
 
@@ -122,6 +121,7 @@ class Analysis():
         print "M VAL ", self.m_val
         return density_r
 
+
     def show_states(self):
         plt.xlabel('X')
         plt.ylabel('Y')
@@ -131,10 +131,15 @@ class Analysis():
         axes.set_xlim([0,15])
         axes.set_ylim([0,15])
         density_r = self.compile_density()
-        IPython.embed()
-        plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2],cmap = cm,s=300,edgecolors='none')
+        #print density_r
+        #print np.sum(density_r)
+        a = np.copy(density_r[:,2])
+        a[112] = 0.0
+        plt.scatter(density_r[:,1],density_r[:,0], c= a, cmap = cm,s=300,edgecolors='none')        
+        #plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2],cmap = cm,s=300,edgecolors='none', color='blue')
         #save each density if called 
        
+        
         #PLOT GOAL STATE
         plt.scatter([7],[7], c= 'green',s=300)
 

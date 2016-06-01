@@ -29,19 +29,19 @@ class BasicGrid():
         """
             Fixed for now for at least 10x10 grid
         """
-        state1 = State(4, 6)
-        state2 = State(6, 9)
-        state3 = State(self.width / 2, self.height / 2)
-        return [state1, state2, state3]
+        state1 = State(7, 7)
+        #state2 = State(6, 9)
+        #state3 = State(self.width / 2, self.height / 2)
+        return [state1]
 
     def get_sink_states(self):
         """
             Fixed for now for at least 10x10 grid
         """
-        state1 = State(1, 2)
-        state2 = State(3, 5)
-        state3 = State(5, 9)
-        return [state1, state2, state3]
+        state1 = State(4, 2)
+        #state2 = State(3, 5)
+        #state3 = State(5, 9)
+        return [state1]
 
     def add_mdp(self, mdp):
         if self.mdp is not None:
