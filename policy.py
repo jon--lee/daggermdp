@@ -50,7 +50,7 @@ class ClassicPolicy():
         
 
     def get_next(self, state):
-        print self.arr.shape
+        #print self.arr.shape
         return self.arr[state.x, state.y]
 
     def update(self, state, action):

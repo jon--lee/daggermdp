@@ -38,7 +38,7 @@ class ClassicMDP():
         elif action == prime_dir:
             return 0.8
         elif Action.arePerpendicular(action, prime_dir):
-            return .1
+            return 0.1
         else:
             return 0.0
             

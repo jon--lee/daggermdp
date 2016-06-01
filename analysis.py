@@ -9,7 +9,7 @@ import cPickle
 from state import State
 class Analysis():
     
-    def __init__(self,H,W,ITERS,desc="No description"):
+    def __init__(self,H,W,ITERS,rewards=None, sinks=None, desc="No description"):
         self.h = H
         self.w = W
         self.iters = ITERS
@@ -17,7 +17,10 @@ class Analysis():
         self.desc = desc
         self.test_loss = -1.0
         self.train_loss = -1.0
-        
+        self.x = None
+        self.mean = None
+        self.err = None
+
     def compute_std_er_m(self,data):
         n = data.shape[0]
         std = np.std(data)
@@ -44,9 +47,13 @@ class Analysis():
     
         self.mean = mean
         self.err = err
+        self.x = x
 
         return [mean,err]
-
+    
+    def set_errorbar(self):
+        plt.errorbar(self.x,self.mean,yerr=self.err,linewidth=5.0)
+        
 
     def display_train_test(self,train,test, trials):
         #Write a function to output test train.
@@ -62,13 +69,17 @@ class Analysis():
 
     @staticmethod
     def load(filename):
-        return cPickle.load(open(filename, 'rb'))
+        a = cPickle.load(open(filename, 'rb'))
+        if a.x is not None and a.mean is not None:    
+            a.set_errorbar()
+        return a
 
     def plot(self):
         plt.ylabel('Reward')
         plt.xlabel('Iterations')
 
-        names = ['NN_Supervise','LOG_Supervisor']
+        names = ['DAgger']        
+        #names = ['NN_Supervise','LOG_Supervisor']
         plt.legend(names,loc='upper right')
 
         font = {'family' : 'normal',
