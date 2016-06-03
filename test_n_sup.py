@@ -48,7 +48,7 @@ for k in range(TRIALS):
 	r_SN = np.zeros(ITER)+r
 	data[k,:] = r_SN
 
-	analysis.count_states(nsupervise.get_states())
+        analysis.count_states(nsupervise.get_states())
 	test_loss_n[k] = nsupervise.get_test_loss()
 	train_loss_n[k] = nsupervise.get_train_loss() 
 
