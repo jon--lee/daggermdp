@@ -2,11 +2,12 @@ from svm import LinearSVM
 from net import Net
 from policy import SVMPolicy,NetPolicy
 import numpy as np
+import IPython
 
 from state import State
 class Supervise():
 
-    def __init__(self, grid, mdp, moves=20):
+    def __init__(self, grid, mdp, moves=40):
         self.grid = grid
         self.mdp = mdp
         self.svm = LinearSVM(grid, mdp)
@@ -45,7 +46,7 @@ class Supervise():
     def sample_policy(self):
         self.record = True
         self.net.clear_data()
-
+        
 
     def get_reward(self):
         return np.sum(self.reward)

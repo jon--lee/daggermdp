@@ -4,6 +4,7 @@ from mdp import ClassicMDP
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
+import IPython
 import numpy as np
 from random import randint
 from dagger import Dagger
@@ -29,19 +30,19 @@ class BasicGrid():
         """
             Fixed for now for at least 10x10 grid
         """
-        state1 = State(4, 6)
-        state2 = State(6, 9)
-        state3 = State(self.width / 2, self.height / 2)
-        return [state1, state2, state3]
+        state1 = State(7, 7)
+        #state2 = State(6, 9)
+        #state3 = State(self.width / 2, self.height / 2)
+        return [state1]
 
     def get_sink_states(self):
         """
             Fixed for now for at least 10x10 grid
         """
-        state1 = State(1, 2)
-        state2 = State(3, 5)
-        state3 = State(5, 9)
-        return [state1, state2, state3]
+        state1 = State(4, 2)
+        #state2 = State(3, 5)
+        #state3 = State(5, 9)
+        return [state1]
 
     def add_mdp(self, mdp):
         if self.mdp is not None:
@@ -161,8 +162,10 @@ class BasicGrid():
     
     def step(self,mdp):
         self.record_states.append(mdp.state)
-        mdp.move()
+    
+        s, a = mdp.move()
         self.time_steps += 1
+        return a
         
     def _animate(self, i):
         self.figure.autoscale(False)

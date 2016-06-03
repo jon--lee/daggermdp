@@ -13,8 +13,8 @@ from analysis import Analysis
 import IPython
 
 ITER = 10
-TRIALS =1
-SAMP = 5
+TRIALS =10
+SAMP = 1
 
 #GridWorld Params
 H = 15
@@ -34,7 +34,7 @@ test_loss_n = np.zeros([TRIALS])
 train_loss_n = np.zeros([TRIALS])
 for k in range(TRIALS):
 	mdp.load_policy()
-	nsupervise = NSupervise(grid,mdp)
+	nsupervise = Supervise(grid,mdp)
 	#Collect Noisy Supervise Samples
 	
 	for t in range(ITER*SAMP):
@@ -42,9 +42,7 @@ for k in range(TRIALS):
 	nsupervise.train()
 	#Evaluate Policy
 	r = 0.0
-	for t in range(SAMP):
-		nsupervise.rollout()
-		r = r+nsupervise.get_reward()/SAMP
+	
 	r_SN = np.zeros(ITER)+r
 	data[k,:] = r_SN
 
@@ -55,13 +53,17 @@ for k in range(TRIALS):
 analysis.show_states()
 
 analysis = Analysis(H,W,TRIALS)
+nsupervise.sample_policy()
 
+
+nsupervise.animate = False
 ###POLICY EVAULATION###
 for k in range(TRIALS):
 	#Collect Noisy Supervise Samples
 	
 	for t in range(ITER*SAMP):
 	   	nsupervise.rollout()
+
 
 	analysis.count_states(nsupervise.get_states())
 

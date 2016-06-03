@@ -10,6 +10,7 @@ class NSupervise():
     def __init__(self, grid, mdp, moves=40,net = 'Net'):
         self.grid = grid
         self.mdp = mdp
+        self.net_name = net
         self.svm = LinearSVM(grid, mdp)
         self.net = Net(grid,mdp,net)
         self.moves = moves
@@ -28,14 +29,20 @@ class NSupervise():
         for t in range(self.moves):
             a = self.super_pi.get_next(self.mdp.state)
             print "action ",a
-            if(self.record):
-                self.net.add_datum(self.mdp.state, a)
+            
             #Get current state and action
             x_t = self.mdp.state
             a_t = self.mdp.pi.get_next(x_t)
 
+
+
             #Take next step 
-            self.grid.step(self.mdp)
+            a_taken = self.grid.step(self.mdp)
+            if(self.record):
+                if(self.net_name == 'UB'):
+                    self.net.add_datum(x_t, a,a_taken)
+                else:
+                    self.net.add_datum()
 
             x_t_1 = self.mdp.state
 
@@ -52,6 +59,8 @@ class NSupervise():
         self.net.clear_data()
     def get_states(self):
         return self.net.get_states()
+    def get_weights(self):
+        return self.net.get_weights()
     def get_reward(self):
         return np.sum(self.reward)
     def set_supervisor_pi(self, pi):

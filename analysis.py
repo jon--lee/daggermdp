@@ -1,5 +1,6 @@
 from svm import LinearSVM
 from net import Net
+from mpl_toolkits.mplot3d import Axes3D
 from policy import SVMPolicy,NetPolicy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +10,7 @@ import cPickle
 from state import State
 class Analysis():
     
-    def __init__(self,H,W,ITERS,rewards=None, sinks=None, desc="No description"):
+    def __init__(self,H=15,W=15,ITERS=1,rewards=None, sinks=None, desc="No description"):
         self.h = H
         self.w = W
         self.iters = ITERS
@@ -100,9 +101,9 @@ class Analysis():
             x = all_states[i,0]
             y = all_states[i,1]
             current_density[x,y] = current_density[x,y] +1.0
-
+        
         norm = np.sum(current_density)
-     
+
         current_density = current_density/norm
         self.density = self.density+ current_density/self.iters
 
@@ -110,7 +111,7 @@ class Analysis():
 
     def compile_density(self):
         density_r = np.zeros([self.h*self.w,3])
-        norm = np.sum(self.density)
+
         self.m_val = 0.0
         for w in range(self.w):
             for h in range(self.h):
@@ -122,7 +123,8 @@ class Analysis():
         print "M VAL ", self.m_val
         return density_r
 
-    def show_states(self):
+
+    def plot_scatter(self,weights=None,color='density'):
         plt.xlabel('X')
         plt.ylabel('Y')
         cm = plt.cm.get_cmap('gray_r')
@@ -132,15 +134,33 @@ class Analysis():
         axes.set_ylim([0,15])
         density_r = self.compile_density()
         
-        plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2],cmap = cm,s=300,edgecolors='none')
+        #print density_r
+        #print np.sum(density_r)
+        if(color == 'density'):
+            a = np.copy(density_r[:,2])
+            a[112] = 0.0
+            plt.scatter(density_r[:,1],density_r[:,0], c= a, cmap = cm,s=300,edgecolors='none') 
+        else: 
+            a = weights
+            plt.scatter(weights[:,0],weights[:,1], c= weights[:,2], cmap = cm,s=300) 
+            IPython.embed()
+               
+        #plt.scatter(density_r[:,1],density_r[:,0], c= density_r[:,2],cmap = cm,s=300,edgecolors='none', color='blue')
         #save each density if called 
        
-        #PLOT GOAL STATE
-        #plt.scatter([7],[7], c= 'green',s=300)
+        
+        # #PLOT GOAL STATE
+        # plt.scatter([7],[7], c= 'green',s=300)
 
-        #PLOT SINK STATE
-        #plt.scatter([4],[2], c= 'red',s=300)
+        # #PLOT SINK STATE
+        # plt.scatter([4],[2], c= 'red',s=300)
 
         plt.show()
 
+    def show_states(self):
+        self.plot_scatter()
+
+
+    def show_weights(self,weights):
+        self.plot_scatter(weights=weights,color = 'weights')
 

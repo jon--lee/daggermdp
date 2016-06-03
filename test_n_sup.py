@@ -23,8 +23,8 @@ W = 15
 grid = BasicGrid(H, W)
 mdp = ClassicMDP(ClassicPolicy(grid), grid)
 analysis = Analysis(H,W,TRIALS)
-# mdp.value_iteration()
-# mdp.save_policy()
+#mdp.value_iteration()
+#mdp.save_policy()
 mdp.load_policy()
 
 

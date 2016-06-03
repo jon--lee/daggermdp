@@ -69,8 +69,9 @@ class ClassicMDP():
             prob_sum += trans_prob
             if x < prob_sum:
                 self.update_state(adj)
-                return adj
-        return self.state    
+                return [adj, next_action]
+        
+        return [self.state,next_action]    
         
 
     def value_iteration(self):
