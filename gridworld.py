@@ -216,16 +216,16 @@ if __name__ == '__main__':
     grid = BasicGrid(15, 15)
     mdp = ClassicMDP(ClassicPolicy(grid), grid)
     
-    #mdp.value_iteration()
-    #mdp.save_policy()
-    mdp.load_policy()
+    mdp.value_iteration()
+    mdp.save_policy()
+    #mdp.load_policy()
     
-    for i in range(40):
-        grid.step(mdp)
-    grid.show_recording()
+    #for i in range(40):
+    #    grid.step(mdp)
+    #grid.show_recording()
     
-    #dagger = SVMDagger(grid, mdp)
-    #dagger.rollout()            # rollout with supervisor policy
-    #for _ in range(5):
-    #    dagger.retrain()
-    #    dagger.rollout()
+    dagger = SVMDagger(grid, mdp)
+    dagger.rollout()            # rollout with supervisor policy
+    for _ in range(5):
+        dagger.retrain()
+        dagger.rollout()
