@@ -88,18 +88,19 @@ class Plotter():
         # [-1] = stay, [0] = up, [1] = right, [2] = down, [3] = left
         state_actions = [[], [], [], [], []]
         markers = ['^', '>', 'v', '<', 'o']
+        colors = ['c', 'm', 'k', 'y', 'b']
         for i in range(self.w):
             for j in range(self.h):
                 state = State(i, j)
                 next_action = int(policy.get_next(state))
                 state_actions[next_action].append((i, j))
 
-        for direction, marker in zip(state_actions, markers):
+        for direction, marker, color in zip(state_actions, markers, colors):
             xs, ys = [], []
             for x, y in direction:
                 xs.append(x)
                 ys.append(y)
-            figure.scatter(xs, ys, marker=marker, s=50)
+            figure.scatter(xs, ys, marker=marker, s=50, color=color)
 
         plt.show()
 
