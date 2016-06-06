@@ -7,6 +7,7 @@ import matplotlib.animation as animation
 import time
 import numpy as np
 from dagger import Dagger
+from sv_dagger import SVMDagger
 from supervise import Supervise
 from nsupervise import NSupervise
 from analysis import Analysis
@@ -15,6 +16,8 @@ import IPython
 ITER = 10
 TRIALS = 10
 SAMP = 5
+
+MOVES = 40
 
 #GridWorld Params
 H = 15
@@ -31,7 +34,7 @@ mdp.load_policy()
 data = np.zeros([TRIALS,ITER])
 for k in range(TRIALS):
 	mdp.load_policy()
-	dagger = Dagger(grid, mdp)
+	dagger = SVMDagger(grid, mdp)
 	dagger.rollout()            # rollout with supervisor policy
 	r_D = np.zeros(ITER)
 	for t in range(ITER):

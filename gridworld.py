@@ -16,7 +16,7 @@ class BasicGrid():
         self.height = height
         self.mdp = None
         self.time_steps = 0
-        self.record_states = []
+        self.record_states = [] # list of states
         
         self.reward_states = self.get_reward_states()
         self.sink_states = self.get_sink_states()

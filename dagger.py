@@ -16,10 +16,13 @@ class Dagger():
         self.super_pi = mdp.pi
         self.reward = np.zeros(self.moves)
         self.animate = False
+
+        self.recent_rollout_states = None
         
     def rollout(self):
         self.grid.reset_mdp()
         self.reward = np.zeros(self.moves)
+        self.recent_rollout_states = [self.mdp.state]
         for t in range(self.moves):
             self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
             #Get current state and action
@@ -34,7 +37,7 @@ class Dagger():
             #Evaualte reward recieved 
             self.reward[t] = self.grid.reward(x_t,a_t,x_t_1)
 
-
+            self.recent_rollout_states.append(self.mdp.state)
 
         if(self.animate):
             self.grid.show_recording()
@@ -46,7 +49,15 @@ class Dagger():
         return np.sum(self.reward)
     def set_supervisor_pi(self, pi):
         self.super_pi = pi
-
+    
+    def get_recent_rollout_states(self):
+        N = len(self.recent_rollout_states)
+        states = np.zeros([N,2])
+        for i in range(N):
+            x = self.recent_rollout_states[i].toArray()
+            states[i,:] = x        
+        return states
+    
     def retrain(self):
         self.net.fit()
         self.mdp.pi = NetPolicy(self.net)

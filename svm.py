@@ -1,5 +1,5 @@
 from sklearn import svm
-
+import numpy as np
 class LinearSVM():
 
     def __init__(self, grid, mdp):
@@ -7,7 +7,6 @@ class LinearSVM():
         self.grid = grid
         self.data = []
         self.svm = None
-
     def add_datum(self, state, action):
         self.data.append((state, action))
         
@@ -22,3 +21,16 @@ class LinearSVM():
     
     def predict(self, a):
         return self.svm.predict(a)
+
+    def get_states(self):
+        N = len(self.data)
+        states = np.zeros([N,2])
+        for i in range(N):
+            x = self.data[i][0].toArray()
+            states[i,:] = x
+
+        return states
+
+
+    def clear_data(self):
+        self.data = []
