@@ -14,7 +14,7 @@ import IPython
 
 ITER = 10
 TRIALS =1
-SAMP = 1
+SAMP = 5
 
 #GridWorld Params
 H = 15
@@ -52,5 +52,25 @@ for k in range(TRIALS):
 
 	analysis.show_states()
 
-	analysis.show_weights(nsupervise.get_weights())
+	#analysis.show_weights(nsupervise.get_weights())
 
+	analysis = Analysis(H,W,TRIALS)
+	nsupervise.animate = False
+	nsupervise.sample_policy()
+	for t in range(SAMP):
+	 	nsupervise.rollout()
+		r = r+nsupervise.get_reward()/SAMP
+		r_SN = np.zeros(ITER)+r
+	 	data[k,:] = r_SN
+
+	analysis.count_states(nsupervise.get_states())
+
+	analysis.get_perf(data)
+	analysis.plot()
+	analysis.show_states()
+
+
+	
+
+		
+	

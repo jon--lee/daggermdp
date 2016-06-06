@@ -16,7 +16,7 @@ class NSupervise():
         self.moves = moves
         #self.reward = np.zeros(40)
         self.super_pi = mdp.pi
-        self.mdp.pi_noise = True
+        self.mdp.pi_noise = False
         self.reward = np.zeros(self.moves)
         self.animate = False
         self.train_loss = 0
@@ -28,7 +28,7 @@ class NSupervise():
         self.reward = np.zeros(self.moves)
         for t in range(self.moves):
             a = self.super_pi.get_next(self.mdp.state)
-            print "action ",a
+            #print "action ",a
             
             #Get current state and action
             x_t = self.mdp.state
@@ -38,11 +38,14 @@ class NSupervise():
 
             #Take next step 
             a_taken = self.grid.step(self.mdp)
+
+            print "action taken ", a_taken
+            print "timestep ", t
             if(self.record):
                 if(self.net_name == 'UB'):
                     self.net.add_datum(x_t, a,a_taken)
                 else:
-                    self.net.add_datum()
+                    self.net.add_datum(x_t,a)
 
             x_t_1 = self.mdp.state
 

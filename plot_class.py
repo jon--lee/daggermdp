@@ -1,14 +1,14 @@
 from svm import LinearSVM
-from net import Net
+#from net import Net
 from mpl_toolkits.mplot3d import Axes3D
-from policy import SVMPolicy,NetPolicy
+#from policy import SVMPolicy,NetPolicy
 import numpy as np
 import matplotlib.pyplot as plt
 import IPython
 import cPickle
 
 from state import State
-class Analysis():
+class Plotter():
     
     def __init__(self,H=15,W=15,ITERS=1,rewards=None, sinks=None, desc="No description"):
         self.h = H
@@ -24,75 +24,20 @@ class Analysis():
         self.err = None
 
 
-    def compute_std_er_m(self,data):
-        n = data.shape[0]
-        std = np.std(data)
-
-        return std/np.sqrt(n)
-
-    def compute_m(self,data):
-        n = data.shape[0]
-        return np.sum(data)/n
-
-    def get_perf(self,data):
-        #SAve each mean and err at the end
-        iters = data.shape[1]
-        mean = np.zeros(iters)
-        err = np.zeros(iters)
-        x = np.zeros(iters)
-
-        for i in range(iters):
-            mean[i] = self.compute_m(data[:,i])
-            x[i] = i
-            err[i] = self.compute_std_er_m(data[:,i])
+    def count_data(self,data):
+        N = data.shape[0]
+        current_density = np.zeros([self.h,self.w])
+        for i in range(N):
+            x = data[i][0][0]
+            y = data[i][0][1]
+          
+            current_density[x,y] = current_density[x,y] +1.0
         
-        plt.errorbar(x,mean,yerr=err,linewidth=5.0)
-    
-        self.mean = mean
-        self.err = err
-        self.x = x
+        norm = np.sum(current_density)
 
-        return [mean,err]
-    
-    def set_errorbar(self):
-        plt.errorbar(self.x,self.mean,yerr=self.err,linewidth=5.0)
-        
+        current_density = current_density/norm
+        self.density = current_density
 
-    def display_train_test(self,train,test, trials):
-        #Write a function to output test train.
-        print "TEST LOSS ", np.sum(test)/trials
-        print "TRAIN LOSS", np.sum(train)/trials
-        self.train_loss = train
-        self.test_loss = test
-        #SAve 
-
-    def save(self, filename='analysis.p'):
-        #[self.mean, self.err, self.density, self.train_loss, self.test_loss]
-        return cPickle.dump(self, open(filename, 'wb'))
-
-    @staticmethod
-    def load(filename):
-        a = cPickle.load(open(filename, 'rb'))
-        if a.x is not None and a.mean is not None:    
-            a.set_errorbar()
-        return a
-
-    def plot(self):
-        plt.ylabel('Reward')
-        plt.xlabel('Iterations')
-
-        names = ['Sup_UB']        
-        #names = ['NN_Supervise','LOG_Supervisor']
-        plt.legend(names,loc='upper right')
-
-        font = {'family' : 'normal',
-                'weight' : 'bold',
-                'size'   : 22},
-
-        axes = plt.gca()
-        axes.set_xlim([0,10])
-
-        plt.show()
 
     def count_states(self,all_states):
         N = all_states.shape[0]
@@ -105,7 +50,7 @@ class Analysis():
         norm = np.sum(current_density)
 
         current_density = current_density/norm
-        self.density = self.density+ current_density/self.iters
+        self.density = current_density
 
         
 
@@ -138,7 +83,7 @@ class Analysis():
         #print np.sum(density_r)
         if(color == 'density'):
             a = np.copy(density_r[:,2])
-            a[112] = 0.0
+            
             plt.scatter(density_r[:,1],density_r[:,0], c= a, cmap = cm,s=300,edgecolors='none') 
         else: 
             a = weights
