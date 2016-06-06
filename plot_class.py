@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import IPython
 import cPickle
-
 from state import State
 class Plotter():
     
@@ -67,6 +66,42 @@ class Plotter():
                 density_r[w*self.w+h,:] = val_r
         print "M VAL ", self.m_val
         return density_r
+
+    def plot_state_actions(self, policy):
+        """
+            plot all state actions
+        """
+        fig, figure = plt.subplots()
+        figure.set_xlim([-.5, self.w - 1 +.5])
+        figure.set_ylim([-.5, self.h - 1 + .5])                                        
+
+        width_range = np.arange(self.w)
+        height_range = np.arange(self.h)
+        plt.xticks(width_range)
+        plt.yticks(height_range)
+        figure.set_yticks((height_range[:-1] + 0.5), minor=True)
+        figure.set_xticks((width_range[:-1] + 0.5), minor=True)            
+        figure.grid(which='minor', axis='both', linestyle='-')  
+        plt.scatter([7],[7], c= 'green',s=300)  # reward
+        plt.scatter([4],[2], c= 'red',s=300)    # sink
+        
+        # [-1] = stay, [0] = up, [1] = right, [2] = down, [3] = left
+        state_actions = [[], [], [], [], []]
+        markers = ['^', '>', 'v', '<', 'o']
+        for i in range(self.w):
+            for j in range(self.h):
+                state = State(i, j)
+                next_action = int(policy.get_next(state))
+                state_actions[next_action].append((i, j))
+
+        for direction, marker in zip(state_actions, markers):
+            xs, ys = [], []
+            for x, y in direction:
+                xs.append(x)
+                ys.append(y)
+            figure.scatter(xs, ys, marker=marker, s=50)
+
+        plt.show()
 
 
     def plot_scatter(self,weights=None,color='density'):
