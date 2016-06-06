@@ -4,3 +4,6 @@
 *.p
 *.pyc
 *.txt
+/images
+/videos
+*.png

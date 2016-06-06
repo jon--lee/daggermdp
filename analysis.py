@@ -42,7 +42,7 @@ class Analysis():
         x = np.zeros(iters)
 
         for i in range(iters):
-            mean[i] = self.compute_m(data[:,i])
+            mean[i] = self.compute_m(data[:,i]) # for iteration i, compute mean reward across trials
             x[i] = i
             err[i] = self.compute_std_er_m(data[:,i])
         
@@ -94,6 +94,9 @@ class Analysis():
 
         plt.show()
 
+    def reset_density(self):
+        self.density = np.zeros([self.h,self.w])        
+
     def count_states(self,all_states):
         N = all_states.shape[0]
         current_density = np.zeros([self.h,self.w])
@@ -124,7 +127,7 @@ class Analysis():
         return density_r
 
 
-    def plot_scatter(self,weights=None,color='density'):
+    def plot_setup(self,weights=None,color='density'):
         plt.xlabel('X')
         plt.ylabel('Y')
         cm = plt.cm.get_cmap('gray_r')
@@ -150,12 +153,23 @@ class Analysis():
        
         
         # #PLOT GOAL STATE
-        # plt.scatter([7],[7], c= 'green',s=300)
+        plt.scatter([7],[7], c= 'green',s=300)
 
         # #PLOT SINK STATE
-        # plt.scatter([4],[2], c= 'red',s=300)
+        plt.scatter([4],[2], c= 'red',s=300)
+        
 
+
+    def plot_scatter(self,weights=None,color='density'):
+        self.plot_setup(weights, color)
         plt.show()
+
+    def plot_save(self, name, weights=None, color='density'):
+        self.plot_setup(weights, color)
+        plt.savefig(name)
+
+    def save_states(self, name):
+        self.plot_save(name)
 
     def show_states(self):
         self.plot_scatter()
