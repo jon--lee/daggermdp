@@ -58,9 +58,9 @@ class Net():
                 self.net = gridnet_ub.GridNet_UB()
             #self.net.optimize(2000,data,batch_size = 50)
             if(self.net_name == 'UB'):
-                self.net.optimize(3000,data,batch_size = 400, unbiased = True)
+                self.net.optimize(2500,data,batch_size = 400, unbiased = True)
             else: 
-                self.net.optimize(100,data,batch_size = 200)
+                self.net.optimize(1000,data,batch_size = 200)
 
     def get_weights(self):
         data = inputdata.GridData_UB(self.data,self.T)

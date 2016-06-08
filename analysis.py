@@ -81,7 +81,7 @@ class Analysis():
         plt.ylabel('Reward')
         plt.xlabel('Iterations')
 
-        names = ['Sup_UB']        
+        names = ['NSup','NSup_UB']        
         #names = ['NN_Supervise','LOG_Supervisor']
         plt.legend(names,loc='upper right')
 

@@ -13,7 +13,7 @@ from analysis import Analysis
 import IPython
 
 ITER = 10
-TRIALS =1
+TRIALS =5
 SAMP = 5
 
 #GridWorld Params
@@ -34,7 +34,7 @@ test_loss_n = np.zeros([TRIALS])
 train_loss_n = np.zeros([TRIALS])
 for k in range(TRIALS):
 	mdp.load_policy()
-	nsupervise = NSupervise(grid,mdp, net = 'UB')
+	nsupervise = NSupervise(grid,mdp)# net = 'UB')
 	#Collect Noisy Supervise Samples
 	
 	for t in range(ITER*SAMP):
