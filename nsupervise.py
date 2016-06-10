@@ -7,16 +7,16 @@ import IPython
 from state import State
 class NSupervise():
 
-    def __init__(self, grid, mdp, moves=20,net = 'Net'):
+    def __init__(self, grid, mdp, moves=40,net = 'Net'):
         self.grid = grid
         self.mdp = mdp
         self.net_name = net
         self.svm = LinearSVM(grid, mdp)
-        self.net = Net(grid,mdp,net)
+        self.net = Net(grid,mdp,net,T=moves)
         self.moves = moves
         #self.reward = np.zeros(40)
         self.super_pi = mdp.pi
-        self.mdp.pi_noise = True
+        self.mdp.pi_noise = False
         self.reward = np.zeros(self.moves)
         self.animate = False
         self.train_loss = 0

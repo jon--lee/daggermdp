@@ -58,5 +58,6 @@ for k in range(TRIALS):
     data[k,:] = r_D
 
 analysis.get_perf(data)
-analysis.plot()
 
+analysis.plot()
+analysis.save(filename='results/dagger_20.p')

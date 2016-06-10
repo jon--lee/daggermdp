@@ -6,7 +6,7 @@ import numpy as np
 from state import State
 class Dagger():
 
-    def __init__(self, grid, mdp, moves=20):
+    def __init__(self, grid, mdp, moves=40):
         self.grid = grid
         self.mdp = mdp
         self.svm = LinearSVM(grid, mdp)
