@@ -105,7 +105,7 @@ class Plotter():
 
         plt.show()
 
-    def plot_state_actions(self, policy):
+    def plot_state_actions(self, policy, rewards=None, sinks=None, filename=None):
         """
             plot all state actions
         """
@@ -120,8 +120,15 @@ class Plotter():
         figure.set_yticks((height_range[:-1] + 0.5), minor=True)
         figure.set_xticks((width_range[:-1] + 0.5), minor=True)            
         figure.grid(which='minor', axis='both', linestyle='-')  
-        plt.scatter([7],[7], c= 'green',s=300)  # reward
-        plt.scatter([4],[2], c= 'red',s=300)    # sink
+        
+        if rewards is not None and sinks is not None:
+            for r in rewards:
+                plt.scatter([r.x], [r.y], c='green', s=300)
+            for s in sinks:
+                plt.scatter([s.x], [s.y], c='red', s=300)
+        else:
+            plt.scatter([7],[7], c= 'green',s=300)  # reward
+            plt.scatter([4],[2], c= 'red',s=300)    # sink
         
         # [-1] = stay, [0] = up, [1] = right, [2] = down, [3] = left
         state_actions = [[], [], [], [], []]
@@ -139,7 +146,8 @@ class Plotter():
                 xs.append(x)
                 ys.append(y)
             figure.scatter(xs, ys, marker=marker, s=50, color=color)
-
+        if filename is not None:
+            plt.savefig(filename)
         plt.show()
 
 

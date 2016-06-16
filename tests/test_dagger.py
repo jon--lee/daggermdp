@@ -13,9 +13,9 @@ from nsupervise import NSupervise
 from analysis import Analysis
 import IPython
 
-ITER = 10
-TRIALS =40
-SAMP = 5
+ITER = 20
+TRIALS = 1
+SAMP = 20
 
 #GridWorld Params
 H = 15
@@ -26,12 +26,12 @@ mdp = ClassicMDP(ClassicPolicy(grid), grid)
 analysis = Analysis(H,W,TRIALS, "DAgger Iterations")
 #mdp.value_iteration()
 #mdp.save_policy()
-mdp.load_policy()
+mdp.load_policy('scen1.p')
 
 data = np.zeros([TRIALS,ITER])
 for k in range(TRIALS):
     print "Running trial", k
-    mdp.load_policy()
+    mdp.load_policy('scen1.p')
     dagger = Dagger(grid, mdp)
     dagger.rollout()
     r_D = np.zeros(ITER)
@@ -46,7 +46,8 @@ for k in range(TRIALS):
             iteration_states += dagger.get_recent_rollout_states().tolist()
             r_D[t] = r_D[t]+dagger.get_reward()/SAMP
         analysis.count_states(np.array(iteration_states))
-        #analysis.save_states("images/dagger" + str(t) + ".png")
+        #analysis.show_states()
+        analysis.save_states("images/dagger" + str(t) + ".png")
 
     # analysis2 = Analysis(H, W, TRIALS, "DAgger final policy")
     # iteration_states = []
@@ -57,7 +58,7 @@ for k in range(TRIALS):
     # analysis2.save_states('images/final_policy.png')
     data[k,:] = r_D
 
-analysis.get_perf(data)
+#analysis.get_perf(data)
 
-analysis.plot()
-analysis.save(filename='results/dagger_20.p')
+#analysis.plot()
+#analysis.save(filename='results/dagger_20.p')

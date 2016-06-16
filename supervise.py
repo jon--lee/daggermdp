@@ -20,9 +20,11 @@ class Supervise():
         self.train_loss = 0
         self.test_loss = 0
         self.record = True
+        self.recent_rollout_states = None
         
     def rollout(self):
         self.grid.reset_mdp()
+        self.recent_rollout_states = [self.mdp.state]
         self.reward = np.zeros(self.moves)
         for t in range(self.moves):
             if(self.record):
@@ -38,6 +40,7 @@ class Supervise():
 
             #Evaualte reward recieved 
             self.reward[t] = self.grid.reward(x_t,a_t,x_t_1)
+            self.recent_rollout_states.append(self.mdp.state)
 
 
         if(self.animate):
@@ -55,6 +58,7 @@ class Supervise():
 
     def get_states(self):
         return self.net.get_states()
+    
     def train(self):
         self.net.fit()
         self.mdp.pi = NetPolicy(self.net)
@@ -65,3 +69,13 @@ class Supervise():
 
     def get_test_loss(self):
         return self.test_loss
+
+
+    def get_recent_rollout_states(self):
+        N = len(self.recent_rollout_states)
+        states = np.zeros([N,2])
+        for i in range(N):
+            x = self.recent_rollout_states[i].toArray()
+            states[i,:] = x        
+        return states
+

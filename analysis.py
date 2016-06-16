@@ -16,6 +16,9 @@ class Analysis():
         self.iters = ITERS
         self.density = np.zeros([H,W])
 
+        self.rewards = rewards
+        self.sinks = sinks
+
         self.desc = desc
         self.test_loss = -1.0
         self.train_loss = -1.0
@@ -77,12 +80,15 @@ class Analysis():
             a.set_errorbar()
         return a
 
-    def plot(self):
-        plt.ylabel('Reward')
+    def plot(self, names = None, label = None, filename=None):
+        if label is None:
+            label = 'Reward'
+        plt.ylabel(label)
         plt.xlabel('Iterations')
 
-        names = ['Sup']        
-        #names = ['NN_Supervise','LOG_Supervisor']
+        if names is None:
+            names = ['Sup']        
+            #names = ['NN_Supervise','LOG_Supervisor']
         plt.legend(names,loc='upper right')
 
         font = {'family' : 'normal',
@@ -90,8 +96,10 @@ class Analysis():
                 'size'   : 22},
 
         axes = plt.gca()
-        axes.set_xlim([0,10])
-
+        axes.set_xlim([0,self.iters])
+        
+        if filename is not None:
+            plt.savefig(filename)
         plt.show()
 
     def reset_density(self):
@@ -153,10 +161,26 @@ class Analysis():
        
         
         # #PLOT GOAL STATE
-        plt.scatter([7],[7], c= 'green',s=300)
+        if not self.rewards == None and not self.sinks == None:
+            r_xs = []
+            r_ys = []
+            for r in self.rewards:
+                r_xs.append(r.x)
+                r_ys.append(r.y)
 
-        # #PLOT SINK STATE
-        plt.scatter([4],[2], c= 'red',s=300)
+            s_xs = []
+            s_ys = []
+            for s in self.sinks:
+                s_xs.append(s.x)
+                s_ys.append(s.y)
+            plt.scatter([r_xs], [r_ys], c='green', s=300)
+            plt.scatter([s_xs], [s_ys], c='red', s=300)
+            
+        else:
+            # PLOT GOAL STATE
+            plt.scatter([7],[7], c= 'green',s=300)
+            # PLOT SINK STATE
+            plt.scatter([4],[2], c= 'red',s=300)
         
 
 

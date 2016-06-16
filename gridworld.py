@@ -21,8 +21,6 @@ class BasicGrid():
         self.reward_states = self.get_reward_states()
         self.sink_states = self.get_sink_states()
 
-        #self.reward_state = State(width  / 2, height / 2)
-        #self.failure_state = State(4, 2)
         return
 
 
@@ -31,8 +29,6 @@ class BasicGrid():
             Fixed for now for at least 10x10 grid
         """
         state1 = State(7, 7)
-        #state2 = State(6, 9)
-        #state3 = State(self.width / 2, self.height / 2)
         return [state1]
 
     def get_sink_states(self):
@@ -40,8 +36,6 @@ class BasicGrid():
             Fixed for now for at least 10x10 grid
         """
         state1 = State(4, 2)
-        #state2 = State(3, 5)
-        #state3 = State(5, 9)
         return [state1]
 
     def add_mdp(self, mdp):
@@ -129,6 +123,7 @@ class BasicGrid():
         elif BasicGrid.contains_states(self.sink_states, state_prime):
             return -10
         else:
+            #return -5.0
             return -.02
 
     @staticmethod
@@ -193,7 +188,12 @@ class BasicGrid():
             self.figure.set_xticks((width_range[:-1] + 0.5), minor=True)            
             self.figure.grid(which='minor', axis='both', linestyle='-')            
 
-        
+    
+    def set_recording(self, recording):
+        """
+            recording is list of states
+        """
+        self.record_states = recording
 
     def show_recording(self):
         fig, self.figure = plt.subplots()
@@ -212,7 +212,9 @@ class BasicGrid():
             for j in range(self.height):
                 yield State(i, j)
 
-        
+    
+
+
 if __name__ == '__main__':
     grid = BasicGrid(15, 15)
     mdp = ClassicMDP(ClassicPolicy(grid), grid)

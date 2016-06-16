@@ -7,3 +7,6 @@
 /images
 /videos
 *.png
+supervised.py
+*.npy
+qnet/

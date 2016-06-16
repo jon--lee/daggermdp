@@ -7,11 +7,16 @@ class LinearSVM():
         self.grid = grid
         self.data = []
         self.svm = None
+        self.nonlinear = False
+        
     def add_datum(self, state, action):
         self.data.append((state, action))
         
     def fit(self):
-        self.svm = svm.LinearSVC()
+        if self.nonlinear:
+            self.svm = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
+        else:
+            self.svm = svm.LinearSVC()
         X = []
         Y = []
         for state, action in self.data:
@@ -34,3 +39,11 @@ class LinearSVM():
 
     def clear_data(self):
         self.data = []
+
+
+    def acc(self):
+        results = []
+        for s, a in self.data:
+            pred = self.predict([[s.x, s.y]])[0]
+            results.append(pred == a)
+        return float(sum(results)) / float(len(self.data))

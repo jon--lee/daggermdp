@@ -79,4 +79,18 @@ class NetPolicy():
 
         
 
+class QPolicy():
     
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
+    def __init__(self, qlearner):
+        self.q = qlearner
+
+    def get_next(self, s):
+        max_a = None
+        for a in QPolicy.available_actions:
+            #print self.q.Q.get(s, a)
+            if max_a is None or self.q.Q.get(s, a) > self.q.Q.get(s, max_a):
+                max_a = a
+        #print "Greedy: " + str(self.q.Q.get(s, max_a))
+        return max_a
+        #return self.q.predict([[state.x, state.y]])

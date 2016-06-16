@@ -36,7 +36,6 @@ class Dagger():
 
             #Evaualte reward recieved 
             self.reward[t] = self.grid.reward(x_t,a_t,x_t_1)
-
             self.recent_rollout_states.append(self.mdp.state)
 
         if(self.animate):

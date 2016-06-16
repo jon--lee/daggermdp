@@ -128,12 +128,12 @@ class ClassicMDP():
 
     
 
-    def save_policy(self):
-        f = open('policy.p', 'w')
+    def save_policy(self, filename='policy.p'):
+        f = open(filename, 'w')
         pickle.dump(self.pi, f)
         f.close()
 
-    def load_policy(self):
-        f = open('policy.p', 'r')
+    def load_policy(self, filename='policy.p'):
+        f = open(filename, 'r')
         self.pi = pickle.load(f)
         f.close()

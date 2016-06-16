@@ -5,6 +5,8 @@ a.display_train_test(20, 30, 1)
 b = Analysis.load('analysis_test.p')
 print b.h, b.w"""
 
+
+# Running supervisor value iteration
 from plot_class import Plotter
 from gridworld import BasicGrid
 from policy import ClassicPolicy
