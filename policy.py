@@ -77,7 +77,17 @@ class NetPolicy():
     def get_next(self, state):
         return self.net.predict([[state.x, state.y]])
 
-        
+
+class BoostPolicy():
+    
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
+    
+    def __init__(self, boost):
+        self.boost = boost
+
+    def get_next(self, state):
+        return self.boost.predict([[state.x, state.y]])
+
 
 class QPolicy():
     

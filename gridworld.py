@@ -165,7 +165,7 @@ class BasicGrid():
     def _animate(self, i):
         self.figure.autoscale(False)
         if i < len(self.record_states):
-            print self.record_states[i]
+            #print self.record_states[i]
             xar = [self.record_states[i].x]
             yar = [self.record_states[i].y]
             robo_size = 15000 / self.height / self.width
@@ -187,8 +187,7 @@ class BasicGrid():
             self.figure.set_yticks((height_range[:-1] + 0.5), minor=True)
             self.figure.set_xticks((width_range[:-1] + 0.5), minor=True)            
             self.figure.grid(which='minor', axis='both', linestyle='-')            
-
-    
+            
     def set_recording(self, recording):
         """
             recording is list of states
@@ -197,8 +196,9 @@ class BasicGrid():
 
     def show_recording(self):
         fig, self.figure = plt.subplots()
+        print len(self.record_states)
         # All recordings should take ~10 seconds
-        interval = float(5000) / float(len(self.record_states))
+        interval = float(7000) / float(len(self.record_states))
         try:
             an = animation.FuncAnimation(fig, self._animate, interval=interval, repeat=False)
             plt.show(block=False)

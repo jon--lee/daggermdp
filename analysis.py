@@ -80,7 +80,7 @@ class Analysis():
             a.set_errorbar()
         return a
 
-    def plot(self, names = None, label = None, filename=None):
+    def plot(self, names = None, label = None, filename=None, ylims=None):
         if label is None:
             label = 'Reward'
         plt.ylabel(label)
@@ -97,10 +97,15 @@ class Analysis():
 
         axes = plt.gca()
         axes.set_xlim([0,self.iters])
+        if not ylims is None:
+            axes.set_ylim(ylims)
+            #axes.set_ylim([-60, 100])
         
         if filename is not None:
             plt.savefig(filename)
-        plt.show()
+        #plt.show()
+        plt.show(block=False)
+        plt.close()
 
     def reset_density(self):
         self.density = np.zeros([self.h,self.w])        
@@ -186,7 +191,9 @@ class Analysis():
 
     def plot_scatter(self,weights=None,color='density'):
         self.plot_setup(weights, color)
-        plt.show()
+        #plt.show()
+        plt.show(block=False)
+        plt.close()
 
     def plot_save(self, name, weights=None, color='density'):
         self.plot_setup(weights, color)

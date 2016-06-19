@@ -16,7 +16,7 @@ class Dagger():
         self.super_pi = mdp.pi
         self.reward = np.zeros(self.moves)
         self.animate = False
-
+        self.record = True
         self.recent_rollout_states = None
         
     def rollout(self):
@@ -24,7 +24,8 @@ class Dagger():
         self.reward = np.zeros(self.moves)
         self.recent_rollout_states = [self.mdp.state]
         for t in range(self.moves):
-            self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
+            if self.record:
+                self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
             #Get current state and action
             x_t = self.mdp.state
             a_t = self.mdp.pi.get_next(x_t)

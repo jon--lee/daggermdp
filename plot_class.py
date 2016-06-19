@@ -148,8 +148,9 @@ class Plotter():
             figure.scatter(xs, ys, marker=marker, s=50, color=color)
         if filename is not None:
             plt.savefig(filename)
-        plt.show()
-
+        #plt.show()
+        plt.show(block=False)
+        plt.close()
 
     def plot_scatter(self,weights=None,color='density'):
         plt.xlabel('X')

@@ -1,7 +1,8 @@
-from sklearn import svm
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
-import numpy as np
-class LinearSVM():
+from sklearn import svm
+
+class Boost():
 
     def __init__(self, grid, mdp):
         self.mdp = mdp
@@ -9,25 +10,27 @@ class LinearSVM():
         self.data = []
         self.svm = None
         self.nonlinear = False
-        
+
     def add_datum(self, state, action):
         self.data.append((state, action))
-        
+
     def fit(self):
         if self.nonlinear:
-            self.svm = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
+            svc = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
         else:
-            self.svm = DecisionTreeClassifier()
-            #self.svm = svm.LinearSVC()
+            #svc = svm.LinearSVC()
+            svc = DecisionTreeClassifier()
+        self.boost = AdaBoostClassifier(base_estimator=svc, n_estimators=10, algorithm='SAMME')
+        
         X = []
         Y = []
         for state, action in self.data:
             X.append([state.x, state.y])
             Y.append(action)
-        self.svm.fit(X, Y)
-    
+        self.boost.fit(X, Y)
+
     def predict(self, a):
-        return self.svm.predict(a)
+        return self.boost.predict(a)
 
     def get_states(self):
         N = len(self.data)
@@ -49,3 +52,4 @@ class LinearSVM():
             pred = self.predict([[s.x, s.y]])[0]
             results.append(pred == a)
         return float(sum(results)) / float(len(self.data))
+    
