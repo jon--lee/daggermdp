@@ -1,6 +1,7 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import svm
+import numpy as np
 
 class Boost():
 
@@ -19,7 +20,7 @@ class Boost():
             svc = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
         else:
             #svc = svm.LinearSVC()
-            svc = DecisionTreeClassifier()
+            svc = DecisionTreeClassifier(max_depth=3)
         self.boost = AdaBoostClassifier(base_estimator=svc, n_estimators=10, algorithm='SAMME')
         
         X = []

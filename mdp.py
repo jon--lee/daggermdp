@@ -36,11 +36,11 @@ class ClassicMDP():
         if prime_dir == Action.NONE:
             return 0.0
         elif action == prime_dir:
-            #return 0.8
-            return 0.6
+            return 0.8
+            #return 0.6
         elif Action.arePerpendicular(action, prime_dir):
-            #return 0.1
-            return 0.2
+            return 0.1
+            #return 0.2
         else:
             return 0.0
             
@@ -139,3 +139,29 @@ class ClassicMDP():
         f = open(filename, 'r')
         self.pi = pickle.load(f)
         f.close()
+
+
+class HighVarMDP(ClassicMDP):
+    def transition_prob(self, state, action, state_prime):
+        """
+            Given a state obj, action (direction), and state',
+            return the probability [0, 1] of a successful action
+        """
+        prime_dir = self.grid.get_dir(state, state_prime)
+        if action == Action.NONE and prime_dir == action:
+            return 1.0
+        elif action == Action.NONE:
+            return 0.0
+        
+        if prime_dir == Action.NONE:
+            return 0.0
+        elif action == prime_dir:
+            #return 0.8
+            return 0.6
+        elif Action.arePerpendicular(action, prime_dir):
+            #return 0.1
+            return 0.2
+        else:
+            return 0.0
+
+

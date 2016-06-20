@@ -48,7 +48,7 @@ mdp.load_policy()
 
 value_iter_pi = mdp.pi
 plotter.plot_state_actions(value_iter_pi, rewards = grid.reward_states, sinks = grid.sink_states,
-        filename='boost4_comparisons/value_iter_state_action.png')
+        filename='comparisons/boost4_comparisons/value_iter_state_action.png')
 
 value_iter_data = np.zeros([TRIALS, ITER])
 classic_il_data = np.zeros([TRIALS, ITER])
@@ -92,7 +92,7 @@ for t in range(TRIALS):
 
     if t == 0:
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
-                filename='boost4_comparisons/boost4_classic_il_state_action.png')        
+                filename='comparisons/boost4_comparisons/boost4_classic_il_state_action.png')        
 
     classic_il_data[t,:] = classic_il_r
     value_iter_data[t,:] = value_iter_r
@@ -130,15 +130,15 @@ for t in range(TRIALS):
             r[_] = r[_] + dagger.get_reward() / SAMP
         if _ == ITER - 1 and t == 0:
             dagger_analysis.count_states(np.array(iteration_states))
-            dagger_analysis.save_states("boost4_comparisons/boost4_dagger_final.png")            
+            dagger_analysis.save_states("comparisons/boost4_comparisons/boost4_dagger_final.png")            
             dagger_analysis.show_states()
     if t == 0:
         dagger_analysis.reset_density()        
         dagger_analysis.count_states(dagger.get_states())
-        dagger_analysis.save_states("boost4_comparisons/boost4_dagger.png")
+        dagger_analysis.save_states("comparisons/boost4_comparisons/boost4_dagger.png")
         dagger_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
-                filename='boost4_comparisons/boost4_dagger_state_action.png')
+                filename='comparisons/boost4_comparisons/boost4_dagger_state_action.png')
     dagger_data[t,:] = r
     dagger_acc[t,:] = acc
 
@@ -149,25 +149,25 @@ for t in range(TRIALS):
 
 
 
-np.save('boost4_data/boost4_sup_data.npy', value_iter_data)
-np.save('boost4_data/boost4_classic_il_data.npy', classic_il_data)
-np.save('boost4_data/boost4_dagger_data.npy', dagger_data)
+np.save('comparisons/boost4_data/boost4_sup_data.npy', value_iter_data)
+np.save('comparisons/boost4_data/boost4_classic_il_data.npy', classic_il_data)
+np.save('comparisons/boost4_data/boost4_dagger_data.npy', dagger_data)
 
-np.save('boost4_data/boost4_dagger_acc.npy', dagger_acc)
-np.save('boost4_data/boost4_classic_il_acc.npy', classic_il_acc)
+np.save('comparisons/boost4_data/boost4_dagger_acc.npy', dagger_acc)
+np.save('comparisons/boost4_data/boost4_classic_il_acc.npy', classic_il_acc)
 
 analysis = Analysis(H, W, ITER, rewards=rewards, sinks=sinks, desc="General comparison")
 analysis.get_perf(value_iter_data)
 analysis.get_perf(classic_il_data)
 analysis.get_perf(dagger_data)
 
-analysis.plot(names = ['Value iteration', 'AdaBoost IL', 'RBF SVM DAgger'], filename='boost4_comparisons/boost4_reward_comparison.png', ylims=[-60, 100])
+analysis.plot(names = ['Value iteration', 'AdaBoost IL', 'RBF SVM DAgger'], filename='comparisons/boost4_comparisons/boost4_reward_comparison.png', ylims=[-60, 100])
 
 acc_analysis = Analysis(H, W, ITER, rewards = grid.reward_states, sinks=grid.sink_states, desc="Accuracy comparison")
 acc_analysis.get_perf(classic_il_acc)
 acc_analysis.get_perf(dagger_acc)
 
-acc_analysis.plot(names = ['AdaBoost IL Acc.', 'RBF SVM DAgger Acc.'], label='Accuracy', filename='boost4_comparisons/boost4_acc_comparison.png', ylims=[0,1])
+acc_analysis.plot(names = ['AdaBoost IL Acc.', 'RBF SVM DAgger Acc.'], label='Accuracy', filename='comparisons/boost4_comparisons/boost4_acc_comparison.png', ylims=[0,1])
 
 
 

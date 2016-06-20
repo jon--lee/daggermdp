@@ -89,6 +89,17 @@ class BoostPolicy():
         return self.boost.predict([[state.x, state.y]])
 
 
+class SKPolicy():
+    available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
+    
+    def __init__(self, est):
+        self.est = est
+
+    def get_next(self, state):
+        return self.est.predict([[state.x, state.y]])
+
+
+
 class QPolicy():
     
     available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
@@ -104,3 +115,4 @@ class QPolicy():
         #print "Greedy: " + str(self.q.Q.get(s, max_a))
         return max_a
         #return self.q.predict([[state.x, state.y]])
+

@@ -1,5 +1,6 @@
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import Perceptron
 import numpy as np
 class LinearSVM():
 
@@ -9,16 +10,22 @@ class LinearSVM():
         self.data = []
         self.svm = None
         self.nonlinear = False
+        self.perceptron = False
         
     def add_datum(self, state, action):
         self.data.append((state, action))
         
     def fit(self):
         if self.nonlinear:
+            print "     RBF SVM"
             self.svm = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
         else:
-            self.svm = DecisionTreeClassifier()
+            print "     Decision Tree"
+            self.svm = DecisionTreeClassifier(max_depth=3)
             #self.svm = svm.LinearSVC()
+        if self.perceptron:
+            print "     perceptron"
+            self.svm = Perceptron()
         X = []
         Y = []
         for state, action in self.data:
