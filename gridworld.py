@@ -9,6 +9,7 @@ import numpy as np
 from random import randint
 from dagger import Dagger
 from svm_dagger import SVMDagger
+
 class BasicGrid():
 
     def __init__(self, width, height):
