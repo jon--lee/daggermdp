@@ -10,3 +10,4 @@
 supervised.py
 *.npy
 qnet/
+*.swo

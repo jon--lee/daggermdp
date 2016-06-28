@@ -21,12 +21,7 @@ class LinearSVM():
             self.svm = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
         else:
             print "     Linear SVM"
-            #self.svm = DecisionTreeClassifier(max_depth=depth)
-            #self.svm = svm.LinearSVC()
             self.svm = svm.SVC(kernel='linear')
-            #self.svm = ExtraTreeClassifier(max_depth=depth)
-            #self.svm = BaggingClassifier()
-            #self.svm = svm.SVC(kernel='linear')
         if self.perceptron:
             print "     perceptron"
             self.svm = Perceptron()
