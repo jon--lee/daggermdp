@@ -35,7 +35,18 @@ class DumbPolicy():
         return
 
     def get_next(self, state):
-        return Action.NORTH
+        if state.y == 14 and state.x == 14:
+            return Action.NONE
+        if state.y > state.x:
+            if state.y == 14:
+                return Action.EAST
+            else:
+                return Action.NORTH
+        else:
+            if state.x == 14:
+                return Action.NORTH
+            else:
+                return Action.EAST
     
 
 
@@ -43,7 +54,7 @@ class DumbPolicy():
 class ClassicPolicy():
     
     available_actions = {Action.NORTH, Action.EAST, Action.SOUTH, Action.WEST, Action.NONE}
-
+    desc = 'CLASSIC_POLICY'
     def __init__(self, grid):
         self.arr = np.zeros((grid.width, grid.height))
         return

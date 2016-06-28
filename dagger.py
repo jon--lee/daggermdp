@@ -1,6 +1,6 @@
 from svm import LinearSVM
 from net import Net
-from policy import SVMPolicy,NetPolicy
+from policy import SVMPolicy,NetPolicy,ClassicPolicy
 import numpy as np
 
 from state import State
@@ -23,12 +23,16 @@ class Dagger():
         self.grid.reset_mdp()
         self.reward = np.zeros(self.moves)
         self.recent_rollout_states = [self.mdp.state]
+        self.mistakes = 0.0
         for t in range(self.moves):
             if self.record:
+                assert self.super_pi.desc == ClassicPolicy.desc
                 self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
             #Get current state and action
             x_t = self.mdp.state
             a_t = self.mdp.pi.get_next(x_t)
+
+            self.compare_policies(x_t, a_t)
 
             #Take next step 
             self.grid.step(self.mdp)
@@ -43,13 +47,20 @@ class Dagger():
             self.grid.show_recording()
         #print self.svm.data
 
+    def compare_policies(self, x, a):
+        if self.super_pi.get_next(x) != a:
+            self.mistakes += 1
+
     def get_states(self):
         return self.net.get_states()
     def get_reward(self):
         return np.sum(self.reward)
     def set_supervisor_pi(self, pi):
         self.super_pi = pi
-    
+
+    def get_loss(self):
+        return float(self.mistakes) / float(self.moves)
+
     def get_recent_rollout_states(self):
         N = len(self.recent_rollout_states)
         states = np.zeros([N,2])

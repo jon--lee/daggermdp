@@ -47,7 +47,7 @@ mdp.load_policy()
 
 value_iter_pi = mdp.pi
 plotter.plot_state_actions(value_iter_pi, rewards = grid.reward_states, sinks = grid.sink_states,
-        filename='noisy_comparisons/value_iter_state_action.png')
+        filename='comparisons/noisy_comparisons/value_iter_state_action.png')
 
 value_iter_data = np.zeros([TRIALS, ITER])
 classic_il_data = np.zeros([TRIALS, ITER])
@@ -67,7 +67,7 @@ for t in range(TRIALS):
     print "Value iter reward: " + str(r)
     if t == 0:
         value_iter_analysis.count_states(sup.get_states())
-        value_iter_analysis.save_states("noisy_comparisons/value_iter.png")
+        value_iter_analysis.save_states("comparisons/noisy_comparisons/value_iter.png")
         value_iter_analysis.show_states()
 
     sup.train()
@@ -85,10 +85,10 @@ for t in range(TRIALS):
     print "Classic IL reward: " + str(r)
     if t == 0:
         il_analysis.count_states(sup.get_states())
-        il_analysis.save_states("noisy_comparisons/noisy_classic_il.png")
+        il_analysis.save_states("comparisons/noisy_comparisons/noisy_classic_il.png")
         il_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
-                filename='noisy_comparisons/noisy_classic_il_state_action.png')
+                filename='comparisons/noisy_comparisons/noisy_classic_il_state_action.png')
     classic_il_data[t,:] = np.zeros(ITER) + r
     
 
@@ -116,30 +116,30 @@ for t in range(TRIALS):
             r[_] = r[_] + dagger.get_reward() / SAMP
         if _ == ITER - 1 and t == 0:
             dagger_analysis.count_states(np.array(iteration_states))
-            dagger_analysis.save_states("noisy_comparisons/noisy_dagger_final.png")            
+            dagger_analysis.save_states("comparisons/noisy_comparisons/noisy_dagger_final.png")            
             dagger_analysis.show_states()
     if t == 0:
         dagger_analysis.reset_density()        
         dagger_analysis.count_states(dagger.get_states())
-        dagger_analysis.save_states("noisy_comparisons/noisy_dagger.png")
+        dagger_analysis.save_states("comparisons/noisy_comparisons/noisy_dagger.png")
         dagger_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
-                filename='noisy_comparisons/noisy_dagger_state_action.png')
+                filename='comparisons/noisy_comparisons/noisy_dagger_state_action.png')
     dagger_data[t,:] = r
 
 print value_iter_data
 print classic_il_data
 print dagger_data
 
-np.save('noisy_data/noisy_sup_data.npy', value_iter_data)
-np.save('noisy_data/noisy_classic_il_data.npy', classic_il_data)
-np.save('noisy_data/noisy_dagger_data.npy', dagger_data)
+np.save('comparisons/noisy_data/noisy_sup_data.npy', value_iter_data)
+np.save('comparisons/noisy_data/noisy_classic_il_data.npy', classic_il_data)
+np.save('comparisons/noisy_data/noisy_dagger_data.npy', dagger_data)
 
 analysis = Analysis(H, W, ITER, rewards=rewards, sinks=sinks, desc="General comparison")
 analysis.get_perf(value_iter_data)
 analysis.get_perf(classic_il_data)
 analysis.get_perf(dagger_data)
 
-analysis.plot(names = ['Value iteration', 'Classic IL', 'DAgger'], filename='noisy_comparisons/noisy_reward_comparison.png')
+analysis.plot(names = ['Value iteration', 'Classic IL', 'DAgger'], filename='comparisons/noisy_comparisons/noisy_reward_comparison.png')
 
 

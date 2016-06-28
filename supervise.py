@@ -1,6 +1,6 @@
 from svm import LinearSVM
 from net import Net
-from policy import SVMPolicy,NetPolicy
+from policy import SVMPolicy,NetPolicy, ClassicPolicy
 import numpy as np
 import IPython
 
@@ -26,12 +26,16 @@ class Supervise():
         self.grid.reset_mdp()
         self.recent_rollout_states = [self.mdp.state]
         self.reward = np.zeros(self.moves)
+        self.mistakes = 0.0
         for t in range(self.moves):
             if(self.record):
+                assert self.super_pi.desc == ClassicPolicy.desc
                 self.net.add_datum(self.mdp.state, self.super_pi.get_next(self.mdp.state))
             #Get current state and action
             x_t = self.mdp.state
             a_t = self.mdp.pi.get_next(x_t)
+
+            self.compare_policies(x_t, a_t)
 
             #Take next step 
             self.grid.step(self.mdp)
@@ -50,6 +54,13 @@ class Supervise():
         self.record = True
         self.net.clear_data()
         
+
+    def compare_policies(self, x, a):
+        if self.super_pi.get_next(x) != a:
+            self.mistakes += 1
+
+    def get_loss(self):
+        return float(self.mistakes) / float(self.moves)
 
     def get_reward(self):
         return np.sum(self.reward)

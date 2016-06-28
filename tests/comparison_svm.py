@@ -48,7 +48,7 @@ mdp.load_policy()
 
 value_iter_pi = mdp.pi
 plotter.plot_state_actions(value_iter_pi, rewards = grid.reward_states, sinks = grid.sink_states,
-        filename='svm_comparisons/value_iter_state_action.png')
+        filename='comparisons/svm_comparisons/value_iter_state_action.png')
 
 
 # VALUE ITERATION AND CLASSIC IL
@@ -70,7 +70,7 @@ for t in range(TRIALS):
     print "Value iter reward: " + str(r)
     if t == 0:
         value_iter_analysis.count_states(sup.get_states())
-        value_iter_analysis.save_states("svm_comparisons/value_iter.png")
+        value_iter_analysis.save_states("comparisons/svm_comparisons/value_iter.png")
         value_iter_analysis.show_states()
     sup.train()
 
@@ -90,10 +90,10 @@ for t in range(TRIALS):
     print "Classic IL reward: " + str(r)
     if t == 0:
         il_analysis.count_states(sup.get_states())
-        il_analysis.save_states("svm_comparisons/svm_classic_il.png")
+        il_analysis.save_states("comparisons/svm_comparisons/svm_classic_il.png")
         il_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
-                filename='svm_comparisons/svm_classic_il_state_action.png')
+                filename='comparisons/svm_comparisons/svm_classic_il_state_action.png')
     classic_il_data[t,:] = np.zeros(ITER) + r
 
 # DAGGER
@@ -119,15 +119,15 @@ for t in range(TRIALS):
             r[_] = r[_] + dagger.get_reward() / SAMP
         if _ == ITER - 1 and t == 0:
             dagger_analysis.count_states(np.array(iteration_states))
-            dagger_analysis.save_states("svm_comparisons/svm_dagger_final.png")            
+            dagger_analysis.save_states("comparisons/svm_comparisons/svm_dagger_final.png")            
             dagger_analysis.show_states()
     if t == 0:
         dagger_analysis.reset_density()        
         dagger_analysis.count_states(dagger.get_states())
-        dagger_analysis.save_states("svm_comparisons/svm_dagger.png")
+        dagger_analysis.save_states("comparisons/svm_comparisons/svm_dagger.png")
         dagger_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
-                filename='svm_comparisons/svm_dagger_state_action.png')
+                filename='comparisons/svm_comparisons/svm_dagger_state_action.png')
     dagger_data[t,:] = r
     dagger_acc[t,:] = acc
 
@@ -136,23 +136,23 @@ print value_iter_data
 print classic_il_data
 print dagger_data
 
-np.save('svm_data/svm_sup_data.npy', value_iter_data)
-np.save('svm_data/svm_classic_il_data.npy', classic_il_data)
-np.save('svm_data/svm_dagger_data.npy', dagger_data)
+np.save('comparisons/svm_data/svm_sup_data.npy', value_iter_data)
+np.save('comparisons/svm_data/svm_classic_il_data.npy', classic_il_data)
+np.save('comparisons/svm_data/svm_dagger_data.npy', dagger_data)
 
-np.save('svm_data/svm_dagger_acc.npy', dagger_acc)
-np.save('svm_data/svm_classic_il_acc.npy', classic_il_acc)
+np.save('comparisons/svm_data/svm_dagger_acc.npy', dagger_acc)
+np.save('comparisons/svm_data/svm_classic_il_acc.npy', classic_il_acc)
 
 analysis = Analysis(H, W, ITER, rewards=rewards, sinks=sinks, desc="General comparison")
 analysis.get_perf(value_iter_data)
 analysis.get_perf(classic_il_data)
 analysis.get_perf(dagger_data)
 
-analysis.plot(names = ['Value iteration', 'Classic IL', 'DAgger'], filename='svm_comparisons/svm_reward_comparison.png')
+analysis.plot(names = ['Value iteration', 'Classic IL', 'DAgger'], filename='comparisons/svm_comparisons/svm_reward_comparison.png')
 
 acc_analysis = Analysis(H, W, ITER, rewards = grid.reward_states, sinks=grid.sink_states, desc="Accuracy comparison")
 acc_analysis.get_perf(classic_il_acc)
 acc_analysis.get_perf(dagger_acc)
 
-acc_analysis.plot(names = ['Classic IL Acc.', 'DAgger Acc.'], label='Accuracy', filename='svm_comparisons/svm_acc_comparison.png')
+acc_analysis.plot(names = ['Classic IL Acc.', 'DAgger Acc.'], label='Accuracy', filename='comparisons/svm_comparisons/svm_acc_comparison.png')
 

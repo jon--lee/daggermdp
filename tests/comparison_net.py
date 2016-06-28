@@ -53,7 +53,7 @@ for j in range(0):
     grid.clear_record_states()
 
 plotter.plot_state_actions(mdp.pi, rewards = grid.reward_states, sinks = grid.sink_states,
-        filename='comparisons/value_iter_state_action.png')
+        filename='comparisons/comparisons/value_iter_state_action.png')
 
 # NAIVE IL SUPERVISOR
 sup_data = np.zeros([TRIALS,ITER])
@@ -72,7 +72,7 @@ for t in range(TRIALS):
     print "Value iter reward: " + str(r)
     if t == 0:
         supervisor_analysis.count_states(sup.get_states())
-        supervisor_analysis.save_states("comparisons/value_iter.png") 
+        supervisor_analysis.save_states("comparisons/comparisons/value_iter.png") 
         supervisor_analysis.show_states()
 
 
@@ -95,10 +95,10 @@ for t in range(TRIALS):
     print "Classic IL reward: " + str(r)
     if t == 0:
         il_analysis.count_states(sup.get_states())
-        il_analysis.save_states("comparisons/net_classic_il.png")
+        il_analysis.save_states("comparisons/comparisons/net_classic_il.png")
         il_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards = grid.reward_states, sinks = grid.sink_states,
-                filename='comparisons/net_classic_il_state_action.png')
+                filename='comparisons/comparisons/net_classic_il_state_action.png')
     classic_il_data[t,:] = np.zeros(ITER) + r
     
     
@@ -125,15 +125,15 @@ for t in range(TRIALS):
             r_D[_] = r_D[_]+dagger.get_reward() / SAMP
         if _ == ITER - 1 and t == 0:
             dagger_analysis.count_states(np.array(iteration_states))
-            dagger_analysis.save_states("comparisons/net_dagger_final.png")            
+            dagger_analysis.save_states("comparisons/comparisons/net_dagger_final.png")            
             dagger_analysis.show_states()
     if t == 0:
         dagger_analysis.reset_density()        
         dagger_analysis.count_states(dagger.get_states())
-        dagger_analysis.save_states("comparisons/net_dagger.png")
+        dagger_analysis.save_states("comparisons/comparisons/net_dagger.png")
         dagger_analysis.show_states()
         plotter.plot_state_actions(mdp.pi, rewards = grid.reward_states, sinks = grid.sink_states,
-                filename='comparisons/net_dagger_state_action.png')
+                filename='comparisons/comparisons/net_dagger_state_action.png')
     dagger_train[t,:] = dagger_train_acc
     dagger_test[t,:] = dagger_test_acc
     dagger_data[t,:] = r_D
@@ -144,14 +144,14 @@ print sup_data
 print classic_il_data
 print dagger_data
 
-np.save('data/net_sup_data.npy', sup_data)
-np.save('data/net_classic_il_data.npy', classic_il_data)
-np.save('data/net_dagger_data.npy', dagger_data)
+np.save('comparisons/data/net_sup_data.npy', sup_data)
+np.save('comparisons/data/net_classic_il_data.npy', classic_il_data)
+np.save('comparisons/data/net_dagger_data.npy', dagger_data)
 
-np.save('data/net_classic_test.npy', classic_test)
-np.save('data/net_classic_train.npy', classic_train)
-np.save('data/net_dagger_test.npy', dagger_test)
-np.save('data/net_dagger_train.npy', dagger_train)
+np.save('comparisons/data/net_classic_test.npy', classic_test)
+np.save('comparisons/data/net_classic_train.npy', classic_train)
+np.save('comparisons/data/net_dagger_test.npy', dagger_test)
+np.save('comparisons/data/net_dagger_train.npy', dagger_train)
 
 print classic_test
 print classic_train
@@ -164,7 +164,7 @@ analysis.get_perf(sup_data)
 analysis.get_perf(classic_il_data)
 analysis.get_perf(dagger_data)
 
-analysis.plot(names = ['Value iteration', 'Classic IL', 'DAgger'], filename='comparisons/net_reward_comparison.png')
+analysis.plot(names = ['Value iteration', 'Classic IL', 'DAgger'], filename='comparisons/comparisons/net_reward_comparison.png')
 
 acc_analysis = Analysis(H, W, ITER, rewards = grid.reward_states, sinks=grid.sink_states, desc="Accuracy comparison")
 acc_analysis.get_perf(classic_test)
@@ -172,6 +172,6 @@ acc_analysis.get_perf(classic_train)
 acc_analysis.get_perf(dagger_test)
 acc_analysis.get_perf(dagger_train)
 
-acc_analysis.plot(names = ['Classic IL test', 'Classic IL train', 'DAgger test', 'DAgger train'], label='Accuracy', filename='comparisons/net_acc_comparison.png')
+acc_analysis.plot(names = ['Classic IL test', 'Classic IL train', 'DAgger test', 'DAgger train'], label='Accuracy', filename='comparisons/comparisons/net_acc_comparison.png')
 
 

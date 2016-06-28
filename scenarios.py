@@ -20,3 +20,9 @@ scenario2 = {
     State(12, 10), State(10, 12), State(10, 11), State(11, 10)]
 }
 
+scenario3 = {
+    'rewards': [State(14, 14)],
+    'sinks': [State(12, 13), State(13, 12), State(13, 13), State(13, 11), State(11, 13),
+    State(12, 11), State(11, 12), State(11, 11), State(7, 7), State(8, 8), State(7, 8), State(8,7),
+    State(12, 10), State(10, 12), State(10, 11), State(11, 10), State(14, 13)]
+}
