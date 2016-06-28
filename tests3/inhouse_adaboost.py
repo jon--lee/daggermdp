@@ -71,6 +71,62 @@ svm_il_acc = np.zeros([TRIALS, ITER])
 svm_il_loss = np.zeros([TRIALS, ITER])
 
 
+
+class SVC_boosted():
+    def __init__(self):
+        self.learner_weights = []
+        self.learners = []
+        self.iter_max = 100
+        self.delta_stop = 1e-5
+        self.phi = .5
+
+    def fit(self, features, labels):
+		'''
+    performs the adaboost code using classification
+    '''
+    # features = np.array([point[0] for point in data])
+    # labels = np.array([labels[1] for point in l])
+    weak_learners = []
+    learner_weights = []
+    data_weights = np.array([1.0/len(labels) for _ in range(len(labels))])
+    i = 0
+    while i < 100:
+        learner = SVC(kernel='linear') # instantiate a new weak learner
+        learner.optimize(X, labels, data_weights)
+        err = learner.predict(X, labels, data_weights) 
+        # results = learner.accuracy(data_embedding) # results is expected to an array of classes
+        raw_errors = np.equal(results, labels)
+        err = np.sum((1-raw_errors)  * data_weights)
+
+        # get the weight of the learner
+        learner_weight = np.log2(self.phi*(1-err)/(err*(1-self.phi)))
+        learner_weights.append(learner_weight)
+
+        data_weights = data_weights*np.exp(-learner_weight*raw_errors)
+        normalization = np.sum(data_weights)
+        data_weights = data_weights/normalization
+
+        if err >= self.phi - self.delta_stop or err == 0:
+            break
+        i += 1
+        weak_learners.append(learner)
+
+    self.learners = weak_learners
+    self.learner_weights = learner_weights/np.sum(np.array(learner_weights))
+
+	def predict(self, X):
+		predictions = np.zeros(X.shape[0])
+		for learner, weight in zip(self.learners, self.learner_weights):
+			predictions += learner.predict(X) * self.learner_weights
+		prediction_values = np.around(predictions)
+		prediction_values[prediction_values > 3] = 3
+		prediction_values[prediction_values < -1] = -1
+		return prediction_values
+	
+
+
+
+
 for t in range(TRIALS):
     print "\nIL Trial: " + str(t)
     mdp.load_policy('scen4.p')
@@ -211,6 +267,7 @@ loss_analysis = Analysis(H, W, ITER, rewards=rewards, sinks=sinks, desc="Loss pl
 loss_analysis.get_perf(svm_il_loss)
 loss_analysis.get_perf(ada_il_loss)
 loss_analysis.plot(names = ['LSVM loss', 'LSVM Boosted loss'], filename=comparisons_directory + 'loss_plot.png', ylims=[0, 1])
+
 
 
 
