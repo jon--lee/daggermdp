@@ -90,7 +90,7 @@ for t in range(TRIALS):
     boost = LogisticRegressionCV()
     #boost = ExtraTreeClassifier(max_depth=DEPTH) # get 100% on everything, very fast
     #nb = RandomForestClassifier() #get 100% on nearly everthing, very slow though
-    #boost = AdaBoostClassifier(base_estimator=boost, n_estimators=50)
+    boost = AdaBoostClassifier(base_estimator=boost, n_estimators=10)
     #boost = GradientBoostingClassifier(
     sup = ScikitSupervise(grid, mdp, Classifier=boost)
     sup.sample_policy()

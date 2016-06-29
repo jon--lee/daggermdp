@@ -1,4 +1,3 @@
-from adaboost import Adaboost
 from policy import Action, DumbPolicy, ClassicPolicy
 from state import State
 from mdp import ClassicMDP
@@ -70,6 +69,10 @@ svm_il_data = np.zeros([TRIALS, ITER])
 svm_il_acc = np.zeros([TRIALS, ITER])
 svm_il_loss = np.zeros([TRIALS, ITER])
 
+value_iter_data = np.load(data_directory + 'sup_data.npy')
+svm_il_data = np.load(data_directory + 'svm_classic_il_data.npy')
+svm_il_acc = np.load(data_directory + 'svm_il_acc.npy')
+
 
 
 class SVC_boosted():
@@ -90,28 +93,43 @@ class SVC_boosted():
         learner_weights = []
         data_weights = np.array([1.0/len(labels) for _ in range(len(labels))])
         i = 0
-        while i < 10:
-            learner = SVC(kernel='linear') # instantiate a new weak learner
+
+        if len(X) > 720:
+            pass
+
+        while i < 5:
+            #learner = SVC(kernel='rbf', gamma=1e-1, C=1.0)#(1e-2 * (10**i))) # instantiate a new weak learner
+            learner = SVC(kernel='linear')
             #learner = DecisionTreeClassifier(max_depth=3)
-            learner.fit(X, labels, sample_weight=data_weights)
+            learner.fit(X, labels, sample_weight=(data_weights/.025))
             err = learner.predict(X) 
             # results = learner.accuracy(data_embedding) # results is expected to an array of classes
-            raw_errors = np.equal(err, labels)
-            err = np.sum((1-raw_errors)  * data_weights)
+            raw_success = np.array(err) == np.array(labels) #np.equal(err, labels)
+            acc = np.sum(raw_success * data_weights)
+            err = np.sum((1-raw_success)  * data_weights)
+            print acc
+            #print data_weights
+            svm = SVC(kernel='rbf', gamma=1e-1, C=1.0)
+            svm.fit(X, labels, sample_weight=data_weights)
+            acc = sum(np.array(svm.predict(X)) == np.array(labels))
+            print acc / float(len(X))
+
 
             # get the weight of the learner
             learner_weight = np.log2(self.phi*(1-err)/(err*(1-self.phi)))
             learner_weights.append(learner_weight)
 
-            data_weights = data_weights*np.exp(-learner_weight*raw_errors)
+            data_weights = data_weights*np.exp(-learner_weight*raw_success)
             normalization = np.sum(data_weights)
             data_weights = data_weights/normalization
 
-            if err >= self.phi - self.delta_stop or err == 0:
+            #if err >= self.phi - self.delta_stop or err == 0:
+            if err == 0:
+                print i
+                print err
                 break
             i += 1
             weak_learners.append(learner)
-
         self.learners = weak_learners
         self.learner_weights = learner_weights/np.sum(np.array(learner_weights))
 
@@ -128,7 +146,7 @@ class SVC_boosted():
 
 
 
-for t in range(TRIALS):
+"""for t in range(TRIALS):
     print "\nIL Trial: " + str(t)
     mdp.load_policy('scen4.p')
 
@@ -178,6 +196,7 @@ for t in range(TRIALS):
     svm_il_loss[t,:] = loss
 
 
+"""
 
 
 #BOOSTED SUPERVISOR
@@ -235,6 +254,8 @@ for t in range(TRIALS):
     ada_il_loss[t,:] = loss
 
 
+
+
 # SKLEARN adaboost
 
 sk_il_data = np.zeros([TRIALS, ITER])
@@ -242,7 +263,7 @@ sk_il_acc = np.zeros([TRIALS, ITER])
 sk_il_loss = np.zeros([TRIALS, ITER])
 
 
-for t in range(TRIALS):
+"""for t in range(TRIALS):
     print "\nSKLearn adaboost IL Trial: " + str(t)
     mdp.load_policy('scen4.p')
 
@@ -289,7 +310,7 @@ for t in range(TRIALS):
     sk_il_acc[t,:] = acc
     sk_il_loss[t,:] = loss
 
-
+"""
 
 
 
