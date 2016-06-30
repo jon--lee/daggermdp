@@ -24,12 +24,14 @@ from sklearn.svm import SVC, NuSVC
 from sklearn.svm import LinearSVC
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 import itertools
+from adaboost import Adaboost
+from svc_boosted import WeightedSamplingSVC
 import os
 
 plotter = plot_class.Plotter()
 
 
-short = 'comparisons3/inhouse_adaboost_'
+short = 'comparisons3/inhouse_adaboost_alt'
 comparisons_directory = short + 'comparisons/'
 data_directory = short + 'data/'
 
@@ -42,7 +44,7 @@ if not os.path.exists(data_directory):
 
 ITER = 25
 TRIALS = 15
-SAMP = 20
+SAMP = 15
 LIMIT_DATA = 1
 DEPTH = 6
 
@@ -69,11 +71,9 @@ svm_il_data = np.zeros([TRIALS, ITER])
 svm_il_acc = np.zeros([TRIALS, ITER])
 svm_il_loss = np.zeros([TRIALS, ITER])
 
-value_iter_data = np.load(data_directory + 'sup_data.npy')
-svm_il_data = np.load(data_directory + 'svm_classic_il_data.npy')
-svm_il_acc = np.load(data_directory + 'svm_il_acc.npy')
-
-
+value_iter_data = np.load('comparisons3/inhouse_adaboost_data/' + 'sup_data.npy')
+svm_il_data = np.load('comparisons3/inhouse_adaboost_data/' + 'svm_classic_il_data.npy')
+svm_il_acc = np.load('comparisons3/inhouse_adaboost_data/' + 'svm_il_acc.npy')
 
 class SVC_boosted():
     def __init__(self):
@@ -97,9 +97,10 @@ class SVC_boosted():
         if len(X) > 720:
             pass
 
-        while i < 5:
+        while i < 2:
             #learner = SVC(kernel='rbf', gamma=1e-1, C=1.0)#(1e-2 * (10**i))) # instantiate a new weak learner
             learner = SVC(kernel='linear')
+            #learner = DecisionTreeClassifier(max_depth=3)
             #learner = DecisionTreeClassifier(max_depth=3)
             learner.fit(X, labels, sample_weight=(data_weights/.025))
             err = learner.predict(X) 
@@ -107,12 +108,6 @@ class SVC_boosted():
             raw_success = np.array(err) == np.array(labels) #np.equal(err, labels)
             acc = np.sum(raw_success * data_weights)
             err = np.sum((1-raw_success)  * data_weights)
-            print acc
-            #print data_weights
-            svm = SVC(kernel='rbf', gamma=1e-1, C=1.0)
-            svm.fit(X, labels, sample_weight=data_weights)
-            acc = sum(np.array(svm.predict(X)) == np.array(labels))
-            print acc / float(len(X))
 
 
             # get the weight of the learner
@@ -144,7 +139,7 @@ class SVC_boosted():
 
 
 
-
+# LINEEEAR
 
 """for t in range(TRIALS):
     print "\nIL Trial: " + str(t)
@@ -204,8 +199,6 @@ class SVC_boosted():
 ada_il_data = np.zeros([TRIALS, ITER])
 ada_il_acc = np.zeros([TRIALS, ITER])
 ada_il_loss = np.zeros([TRIALS, ITER])
-
-
 for t in range(TRIALS):
     print "\nAdaboost IL Trial: " + str(t)
     mdp.load_policy('scen4.p')
@@ -245,7 +238,7 @@ for t in range(TRIALS):
             sup.rollout()
             loss[i] += sup.get_loss() / float(SAMP)
             ada_il_r[i] += sup.get_reward() / SAMP
-        #print acc        
+        print acc        
     if t == 0:
         plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
                 filename=comparisons_directory + 'ada_il_state_action.png')        
@@ -253,22 +246,20 @@ for t in range(TRIALS):
     ada_il_acc[t,:] = acc
     ada_il_loss[t,:] = loss
 
-
-
-
 # SKLEARN adaboost
 
 sk_il_data = np.zeros([TRIALS, ITER])
 sk_il_acc = np.zeros([TRIALS, ITER])
 sk_il_loss = np.zeros([TRIALS, ITER])
 
-
-"""for t in range(TRIALS):
+"""
+for t in range(TRIALS):
     print "\nSKLearn adaboost IL Trial: " + str(t)
     mdp.load_policy('scen4.p')
 
-    svm = SVC(kernel='linear')#DecisionTreeClassifier(max_depth=3)#SVC(kernel='linear')
-    ada = AdaBoostClassifier(svm, n_estimators=10, algorithm='SAMME')
+    #svm = SVC(kernel='linear')#DecisionTreeClassifier(max_depth=3)#SVC(kernel='linear')
+    dt = DecisionTreeClassifier(max_depth=3)
+    ada = AdaBoostClassifier(dt, n_estimators=10, algorithm='SAMME')
     #ada = SVC_boosted()
     sup = ScikitSupervise(grid, mdp, Classifier=ada)
     sup.sample_policy()
@@ -309,9 +300,63 @@ sk_il_loss = np.zeros([TRIALS, ITER])
     sk_il_data[t,:] = sk_il_r
     sk_il_acc[t,:] = acc
     sk_il_loss[t,:] = loss
-
 """
 
+
+# ALT Boosted
+
+alt_il_data = np.zeros([TRIALS, ITER])
+alt_il_acc = np.zeros([TRIALS, ITER])
+alt_il_loss = np.zeros([TRIALS, ITER])
+
+
+for t in range(TRIALS):
+    print "\nALT Adaboost IL Trial: " + str(t)
+    mdp.load_policy('scen4.p')
+
+    #svm = SVC(kernel='linear')
+    #dt = DecisionTreeClassifier(max_depth=3)
+    #ada = Adaboost(dt, n_estimators=5)
+    ada = WeightedSamplingSVC()
+    sup = ScikitSupervise(grid, mdp, Classifier=ada)
+    sup.sample_policy()
+
+    value_iter_analysis = Analysis(W, H, ITER, rewards=rewards, sinks=sinks,
+            desc='Value iter policy')
+    alt_il_r = np.zeros(ITER)
+    acc = np.zeros(ITER)
+    loss = np.zeros(ITER)
+
+    sup.record = True
+    #for _ in range(4):
+    #    sup.rollout()
+
+    for i in range(ITER):
+        print "     Iteration: " + str(i)
+        mdp.pi = value_iter_pi 
+        sup.record = True
+        for _ in range(SAMP):
+            if _  >= LIMIT_DATA:
+                sup.record = False
+            sup.rollout()
+
+        sup.record = False
+        print "     Training on " + str(len(sup.net.data)) + " examples"
+        sup.train()
+
+        acc[i] = sup.svm.acc()
+        for _ in range(SAMP):
+            sup.record=False
+            sup.rollout()
+            loss[i] += sup.get_loss() / float(SAMP)
+            alt_il_r[i] += sup.get_reward() / SAMP
+        print acc        
+    if t == 0:
+        plotter.plot_state_actions(mdp.pi, rewards=rewards, sinks=sinks,
+                filename=comparisons_directory + 'ada_il_state_action.png')        
+    alt_il_data[t,:] = alt_il_r
+    alt_il_acc[t,:] = acc
+    alt_il_loss[t,:] = loss
 
 
 
@@ -323,36 +368,42 @@ sk_il_loss = np.zeros([TRIALS, ITER])
 np.save(data_directory + 'sup_data.npy', value_iter_data)
 np.save(data_directory + 'svm_classic_il_data.npy', svm_il_data)
 np.save(data_directory + 'ada_classic_il_data.npy', ada_il_data)
-np.save(data_directory + 'sk_classic_il_data.npy', ada_il_data)
+np.save(data_directory + 'sk_classic_il_data.npy', sk_il_data)
+np.save(data_directory + 'alt_classic_il_data.npy', alt_il_data)
 
 
 np.save(data_directory + 'ada_il_acc.npy', ada_il_acc)
 np.save(data_directory + 'svm_il_acc.npy', svm_il_acc)
-np.save(data_directory + 'sk_il_acc.npy', svm_il_acc)
+np.save(data_directory + 'sk_il_acc.npy', sk_il_acc)
+np.save(data_directory + 'alt_il_acc.npy', alt_il_acc)
+
 
 analysis = Analysis(H, W, ITER, rewards=rewards, sinks=sinks, desc="General comparison")
 analysis.get_perf(value_iter_data)
 analysis.get_perf(svm_il_data)
 analysis.get_perf(ada_il_data)
 analysis.get_perf(sk_il_data)
+analysis.get_perf(alt_il_data)
 
 #analysis.plot(names = ['Value iteration', 'Adaboost IL'], filename=comparisons_directory + 'svm_reward_comparison.png', ylims=[-60, 100])
-analysis.plot(names = ['Value iteration', 'LSVM IL', 'LSVM Boosted IL', 'LSVM SK Boosted'], filename=comparisons_directory + 'svm_reward_comparison.png', ylims=[-60, 100])
+analysis.plot(names = ['Value iteration', 'LSVM IL', 'LSVM Boosted IL', 'LSVM SK Boosted', 'Alt boosted'], filename=comparisons_directory + 'svm_reward_comparison.png', ylims=[-60, 100])
 print "Saving analysis to: " + comparisons_directory + 'svm_reward_comparison.png'
 
 acc_analysis = Analysis(H, W, ITER, rewards = grid.reward_states, sinks=grid.sink_states, desc="Accuracy comparison")
 acc_analysis.get_perf(svm_il_acc)
 acc_analysis.get_perf(ada_il_acc)
 acc_analysis.get_perf(sk_il_acc)
+acc_analysis.get_perf(alt_il_acc)
 
-acc_analysis.plot(names = ['LSVM Acc.', 'LSVM Boosted Acc.', 'LSVM SK Boosted'], label='Accuracy', filename=comparisons_directory + 'svm_acc_comparison.png', ylims=[0,1])
+acc_analysis.plot(names = ['LSVM Acc.', 'LSVM Boosted Acc.', 'LSVM SK Boosted', 'Alt Boosted'], label='Accuracy', filename=comparisons_directory + 'svm_acc_comparison.png', ylims=[0,1])
 #acc_analysis.plot(names = ['Adaboost IL Acc.'], label='Accuracy', filename=comparisons_directory + 'svm_acc_comparison.png', ylims=[0,1])
 
 loss_analysis = Analysis(H, W, ITER, rewards=rewards, sinks=sinks, desc="Loss plot")
 loss_analysis.get_perf(svm_il_loss)
 loss_analysis.get_perf(ada_il_loss)
 loss_analysis.get_perf(sk_il_loss)
-loss_analysis.plot(names = ['LSVM loss', 'LSVM Boosted loss', 'LSVM SK Boosted loss'], label='Loss', filename=comparisons_directory + 'loss_plot.png', ylims=[0, 1])
+loss_analysis.get_perf(alt_il_loss)
+loss_analysis.plot(names = ['LSVM loss', 'LSVM Boosted loss', 'LSVM SK Boosted loss', 'Alt boosted'], label='Loss', filename=comparisons_directory + 'loss_plot.png', ylims=[0, 1])
 
 
 

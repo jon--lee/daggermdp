@@ -7,12 +7,13 @@ from dagger import Dagger
 
 class SVMDagger(Dagger):
 
-    def __init__(self, grid, mdp, moves=40, depth=10):
+    def __init__(self, grid, mdp, moves=40, depth=10, model=None):
         Dagger.__init__(self, grid, mdp, moves)
         self.net = self.svm
         self.depth = depth
+        self.model = model
 
     def retrain(self):
-        self.net.fit(depth=self.depth)
+        self.net.fit(depth=self.depth, model=self.model)
         self.mdp.pi = SVMPolicy(self.svm)
 

@@ -15,16 +15,18 @@ class LinearSVM():
     def add_datum(self, state, action):
         self.data.append((state, action))
         
-    def fit(self, depth=10):
-        if self.nonlinear:
-            print "     RBF SVM"
-            self.svm = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
+    def fit(self, depth=10, model=None):
+        if model == None:
+            if self.nonlinear:
+                print "     RBF SVM"
+                self.svm = svm.SVC(kernel='rbf', gamma=0.1, C=1.0)
+            else:
+                print "     Linear SVM"
+                #self.svm = svm.SVC(kernel='linear')
+                self.svm = DecisionTreeClassifier(max_depth=depth)
         else:
-            print "     Linear SVM"
-            self.svm = svm.SVC(kernel='linear')
-        if self.perceptron:
-            print "     perceptron"
-            self.svm = Perceptron()
+            print "     Another model"
+            self.svm = model
         X = []
         Y = []
         for state, action in self.data:

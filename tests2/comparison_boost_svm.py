@@ -76,22 +76,8 @@ for t in range(TRIALS):
     print "\nIL Trial: " + str(t)
     mdp.load_policy('scen4.p')
 
-    #dt = DecisionTreeClassifier(max_depth=DEPTH)
-    #svm = SVC(kernel='rbf', gamma=0.1, C=1.0)
-    #svm = SVC(kernel='linear')
-    
-    #nb = BaggingClassifier() # near perfect accuracy but becomes slower with more data
-    #nb = BernoulliNB() # poor accuracy
-    #nb = SGDClassifier() # doesn't work at all
-    #nb = Perceptron() # doesn't work at all
-    #nb = NuSVC(nu=.99999999) # not working at all 
-    #nb = ExtraTreesClassifier() # get 100% on everything, slower than ExtraTreeClassifier
-    #boost = SVC(probability=True, kernel='linear')
-    boost = LogisticRegressionCV()
-    #boost = ExtraTreeClassifier(max_depth=DEPTH) # get 100% on everything, very fast
-    #nb = RandomForestClassifier() #get 100% on nearly everthing, very slow though
-    boost = AdaBoostClassifier(base_estimator=boost, n_estimators=10)
-    #boost = GradientBoostingClassifier(
+    boost = DecisionTreeClassifier(max_depth=DEPTH)
+    #boost = AdaBoostClassifier(base_estimator=boost, algorithm='SAMME', n_estimators=10)
     sup = ScikitSupervise(grid, mdp, Classifier=boost)
     sup.sample_policy()
 
@@ -146,7 +132,8 @@ dagger_loss = np.zeros((TRIALS, ITER))
 for t in range(TRIALS):
     print "DAgger Trial: " + str(t)
     mdp.load_policy('scen4.p')
-    dagger = SVMDagger(grid, mdp, depth=DEPTH)
+    model = DecisionTreeClassifier(max_depth=DEPTH)
+    dagger = SVMDagger(grid, mdp, depth=DEPTH, model=model)
     dagger.svm.nonlinear=False
     dagger.record = True
     dagger.rollout()
@@ -205,7 +192,7 @@ analysis.get_perf(classic_il_data)
 analysis.get_perf(dagger_data)
 
 #analysis.plot(names = ['Value iteration', 'Adaboost IL'], filename=comparisons_directory + 'svm_reward_comparison.png', ylims=[-60, 100])
-analysis.plot(names = ['Value iteration', 'DT IL', 'DT DAgger'], filename=comparisons_directory + 'svm_reward_comparison.png', ylims=[-60, 100])
+analysis.plot(names = ['Value iteration', '6 DT IL', 'DT DAgger'], filename=comparisons_directory + 'svm_reward_comparison.png', ylims=[-60, 100])
 print "Saving analysis to: " + comparisons_directory + 'svm_reward_comparison.png'
 
 acc_analysis = Analysis(H, W, ITER, rewards = grid.reward_states, sinks=grid.sink_states, desc="Accuracy comparison")
